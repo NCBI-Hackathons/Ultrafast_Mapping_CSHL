@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
 from contextlib import contextmanager
-import copy
-import re
+import os
 from subprocess import Popen, PIPE
+
+from pipeline.utils import *
 
 from ngs import NGS
 from ngs.Read import Read
@@ -84,15 +85,12 @@ class FifoWriter(object):
             finally:
                 os.remove(fifo)
 
-# Misc
-
-
 # Pipelines
 
 def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        with open(args.output_bam, 'wb') as bam:
+        with open_(args.output_bam, 'wb') as bam:
             cmd = normalize_whitespace("""
                 STAR --runThreadN {threads} --genomeDir {index}
                     --readFilesIn {Read1} {Read2}
@@ -117,7 +115,7 @@ def star_pipeline(args):
                 proc.wait()
 
 def hisat_pipeline(args):
-    with open(args.output_bam, 'wb') as bam:
+    with open_(args.output_bam, 'wb') as bam:
         cmd = normalize_whitespace("""
             hisat2 -p {threads} -x {index} --sra-acc {accn} {extra}
                 | sambamba view -S -t {threads} -f bam /dev/stdin
@@ -131,8 +129,7 @@ def hisat_pipeline(args):
         with Popen(cmd, stdout=bam) as proc:
             proc.wait()
 
-@contextmanager
-def mock_align(outfile, workdir, threads, index):
+def mock_pipeline(outfile, workdir, threads, index):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
@@ -140,10 +137,6 @@ def mock_align(outfile, workdir, threads, index):
         print(read1[0] + ':')
         print('  ' + '\t'.join(read1[1:]))
         print('  ' + '\t'.join(read2[1:]))
-
-whitespace = re.compile('\s+')
-def normalize_whitespace(s):
-    tuple(filter(None, whitespace.split(s)))
 
 pipelines = dict(
     star=star_pipeline,
