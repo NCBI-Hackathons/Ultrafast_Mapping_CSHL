@@ -34,13 +34,11 @@ align.py -a SRR1616919 -p hisat -r /path/to/hisat/index -o aligned.bam -t 16
 Generate counts of SRR1616919 using Kallisto...:
 
 ```
-align.py -a SRR1616919 -p kallisto -r /path/to/kallisto/index \
-  -o kallisto_output -t 16
+align.py -a SRR1616919 -p kallisto -r /path/to/kallisto/index -o kallisto_output -t 16
 ```
 
 ...or with Salmon:
 
 ```
-align.py -a SRR1616919 -p salmon -r /path/to/salmon/index \
-  -o salmon_output -t 16
+align.py -a SRR1616919 -p salmon -r /path/to/salmon/index -o salmon_output -t 16
 ```
