@@ -9,7 +9,7 @@ bash call_variants.sh
 	/home/data/GCF_000001405.35_GRCh38.p9_genomic.fna \
 	${BAM} \
 	/home/data/dbsnp \
-	/home/data/intervals \
+	/home/data/bed/Hsapiens_UCSC_hg38_knownGene.bed \
 	/home/data/vcf	\
 	/home/data/indels
 
