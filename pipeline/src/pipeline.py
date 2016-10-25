@@ -1,4 +1,6 @@
-
+# -*- coding: utf-8 -*-
+"""Aligner-agnostic alignment pipeline that reads from SRA.
+"""
 from contextlib import contextmanager
 import os
 from subprocess import Popen, PIPE
