@@ -2,9 +2,7 @@ from argparse import ArgumentParser
 from contextlib import contextmanager
 import copy
 import re
-import shutil
 from subprocess import Popen, PIPE
-import tempfile
 
 from ngs import NGS
 from ngs.Read import Read
@@ -88,28 +86,6 @@ class FifoWriter(object):
 
 # Misc
 
-class TempDir(object):
-    def __init__(self, **kwargs):
-        self.root = tempfile.mkdtemp(**kwargs)
-    
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, exception_type, exception_value, traceback):
-        self.close()
-    
-    def close(self):
-        shutil.rmtree(self.root)
-    
-    def mkfifos(self, *names, subdir=None, **kwargs):
-        parent = self.root
-        if subdir:
-            parent = os.path.join(parent, subdir)
-            os.makedirs(parent, exist_ok=True)
-        fifo_paths = [os.path.join(parent, name) for name in names]
-        for path in fifo_paths:
-            os.mkfifo(path, **kwargs)
-        return fifo_paths
 
 # Pipelines
 
@@ -145,7 +121,7 @@ def hisat_pipeline(args):
         cmd = normalize_whitespace("""
             hisat2 -p {threads} -x {index} --sra-acc {accn} {extra}
                 | sambamba view -S -t {threads} -f bam /dev/stdin
-                | sambamba -t {threads} /dev/stdin
+                | sambamba sort -t {threads} /dev/stdin
         """.format(
             accn=args.sra_accession,
             threads=args.threads,
@@ -192,7 +168,7 @@ def main():
         help="Maximum reads to align")
     parser.add_argument(
         '-o', '--output-bam',
-        default=None, metavar="FILE",
+        default="-", metavar="FILE",
         help="Path to output BAM file")
     parser.add_argument(
         '-p', '--pipeline',
