@@ -11,6 +11,7 @@ INTERVALS=sys.argv[7]
 OUTDIR=sys.argv[8]
 GOLD_INDELS=sys.argv[9]
 THREADS=sys.argv[10]
+samtools=sys.argv[11]
 
 import os.path
 import subprocess
@@ -23,7 +24,7 @@ OUTNAME=os.path.splitext(BAM)[0]
 interval_files=[]
 
 #get the header of the bam file
-proc=subprocess.Popen([samtools, "view", "-H", bam],stdout=subprocess.PIPE)
+proc=subprocess.Popen([samtools, "view", "-H", BAM],stdout=subprocess.PIPE)
 header=""
 contigs=[]
 contig_count=0
