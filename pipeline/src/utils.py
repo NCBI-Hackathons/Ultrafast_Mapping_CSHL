@@ -1,6 +1,26 @@
-import tempfile
+from contextlib import contextmanager
 import os
+import re
 import shutil
+import sys
+import tempfile
+
+whitespace = re.compile('\s+')
+def normalize_whitespace(s):
+    tuple(filter(None, whitespace.split(s)))
+
+@contextmanager
+def open_(path, mode, **kwargs):
+    """Open a file without worrying whether it's an actual path or '-' (for
+    stdin/stdout)."""
+    if path == '-':
+        if 'r' in mode:
+            yield sys.stdin
+        elif 'w' in mode:
+            yield sys.stdout
+    else:
+        with open(path, mode, **kwargs) as f:
+            yield f
 
 class TempDir(object):
     def __init__(self, **kwargs):
