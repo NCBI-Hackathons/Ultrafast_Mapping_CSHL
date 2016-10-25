@@ -89,6 +89,10 @@ class FifoWriter(object):
 
 # Pipelines
 
+# TODO: [JD] These have lots of redundant code right now. I will be adding
+# alternate readers for local FASTQ and SAM/BAM/CRAM files and refactoring the
+# Pipelines to accept an arbitrary reader.
+
 def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
@@ -134,11 +138,43 @@ def hisat_pipeline(args):
 def kallisto_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        libtype = ''
+        if 'F' in args.libtype:
+            libtype = '--fr-stranded'
+        elif 'R' in args.libtype:
+            libtype = '--rf-stranded'
         cmd = normalize_whitespace("""
-            kallisto quant -i {index} -o {output} {fifo1} {fifo2}
+            kallisto quant -t {threads} -i {index} -o {output}
+                {libtype} {extra} {fifo1} {fifo2}
         """.format(
+            threads=args.threads,
             index=args.index,
             output=args.output,
+            libtype=libtype,
+            extra=args.aligner_args,
+            fifo1=fifo1,
+            fifo2=fifo2))
+        with Popen(cmd) as proc:
+            with FifoWriter(fifo1, fifo2, fastq) as writer:
+                for read_pair in sra_reader(
+                        args.sra_accession,
+                        batch_size=args.batch_size,
+                        max_reads=args.max_reads):
+                    writer(*read_pair)
+            proc.wait()
+
+def salmon_pipeline(args):
+    with TempDir() as workdir:
+        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        cmd = normalize_whitespace("""
+            salmon quant -p {threads} -i {index} -l {libtype}
+                {extra} -1 {fifo1} -2 {fifo2} -o {output}
+        """.format(
+            threads=args.threads,
+            index=args.index,
+            libtype=args.libtype,
+            output=args.output,
+            extra=args.aligner_args,
             fifo1=fifo1,
             fifo2=fifo2))
         with Popen(cmd) as proc:

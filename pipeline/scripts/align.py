@@ -10,9 +10,11 @@ def main():
         default=None, metavar="SRRXXXXXXX",
         help="Accession number of SRA run to align")
     parser.add_argument(
-        '-i', '--index',
-        default=None, metavar="PATH",
-        help="Genome idex to use for alignment")
+        '-l', '--library-type',
+        default="SF", metavar="LIBTYPE",
+        help="Library type, as specified by Salmon ( "
+            "http://salmon.readthedocs.io/en/latest/salmon.html). "
+            "Currently, this argument is only used for Kallisto and Salmon.")
     parser.add_argument(
         '-M', '--max-reads',
         type=int, default=None, metavar="N",
@@ -27,6 +29,10 @@ def main():
         '-p', '--pipeline',
         choices=list_pipelines(), default='star',
         help="The alignment pipeline to use")
+    parser.add_argument(
+        '-r', '--index',
+        default=None, metavar="PATH",
+        help="Genome idex to use for alignment")
     parser.add_argument(
         '-t', '--threads',
         type=int, default=1, metavar="N",
