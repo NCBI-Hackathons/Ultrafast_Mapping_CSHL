@@ -1,15 +1,5 @@
 #!/bin/bash
 
-#1 /usr/lib/jvm/jdk-8-oracle-x64/jre/bin/java
-#2 /opt/gatk/GenomeAnalysisTK.jar
-#3 16G
-#4 /home/data/GCF_000001405.35_GRCh38.p9_genomic.fna
-#5 
-#6 
-#7
-#8 /home/data/vcf
-#9 
-
 JAVA=$1
 GATK_JAR=$2
 GATK_MEM=$3
