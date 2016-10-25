@@ -86,41 +86,6 @@ class FifoWriter(object):
             finally:
                 os.remove(fifo)
 
-# Pipelines
-
-@contextmanager
-def star_align(outfile, workdir, threads, index, mkfifo_args={}, open_args={}):
-    fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2', **mkfifo_args)
-    with open(outfile, 'wb') as bam:
-        cmd = normalize_whitespace("""
-            STAR --runThreadN {threads} --genomeDir {index}
-                --readFilesIn {Read1} {Read2}
-                --outSAMtype BAM SortedByCoordinate
-                --outStd BAM SortedByCoordinate
-                --outMultimapperOrder Random
-        """.format(
-            threads=threads,
-            index=index,
-            Read1=fifo1,
-            Read2=fifo2
-        ))
-        with Popen(cmd, stdout=bam) as proc:
-            with FifoWriter(fifo1, fifo2, fastq, **open_args) as writer:
-                yield writer
-
-@contextmanager
-def mock_align(outfile, workdir, threads, index):
-    def mock_writer(read1, read2):
-        print(read1[0] + ':')
-        print('  ' + '\t'.join(read1[1:]))
-        print('  ' + '\t'.join(read2[1:]))
-    yield mock_writer
-
-whitespace = re.compile('\s+')
-
-def normalize_whitespace(s):
-    tuple(filter(None, whitespace.split(s)))
-
 # Misc
 
 class TempDir(object):
@@ -146,6 +111,69 @@ class TempDir(object):
             os.mkfifo(path, **kwargs)
         return fifo_paths
 
+# Pipelines
+
+def star_pipeline(args):
+    with TempDir() as workdir:
+        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        with open(args.output_bam, 'wb') as bam:
+            cmd = normalize_whitespace("""
+                STAR --runThreadN {threads} --genomeDir {index}
+                    --readFilesIn {Read1} {Read2}
+                    --outSAMtype BAM SortedByCoordinate
+                    --outStd BAM SortedByCoordinate
+                    --outMultimapperOrder Random
+                    {extra}
+            """.format(
+                threads=args.threads,
+                index=args.index,
+                Read1=fifo1,
+                Read2=fifo2,
+                extra=args.aligner_args
+            ))
+            with Popen(cmd, stdout=bam) as proc:
+                with FifoWriter(fifo1, fifo2, fastq) as writer:
+                    for read_pair in sra_reader(
+                            args.sra_accession,
+                            batch_size=args.batch_size,
+                            max_reads=args.max_reads):
+                        writer(*read_pair)
+                proc.wait()
+
+def hisat_pipeline(args):
+    with open(args.output_bam, 'wb') as bam:
+        cmd = normalize_whitespace("""
+            hisat2 -p {threads} -x {index} --sra-acc {accn} {extra}
+                | sambamba view -S -t {threads} -f bam /dev/stdin
+                | sambamba -t {threads} /dev/stdin
+        """.format(
+            accn=args.sra_accession,
+            threads=args.threads,
+            index=args.index,
+            extra=args.aligner_args
+        ))
+        with Popen(cmd, stdout=bam) as proc:
+            proc.wait()
+
+@contextmanager
+def mock_align(outfile, workdir, threads, index):
+    for read1, read2 in sra_reader(
+            args.sra_accession,
+            batch_size=args.batch_size,
+            max_reads=args.max_reads):
+        print(read1[0] + ':')
+        print('  ' + '\t'.join(read1[1:]))
+        print('  ' + '\t'.join(read2[1:]))
+
+whitespace = re.compile('\s+')
+def normalize_whitespace(s):
+    tuple(filter(None, whitespace.split(s)))
+
+pipelines = dict(
+    star=star_pipeline,
+    hisat=hisat_pipeline,
+    mock=mock_pipeline)
+
 # Main
 
 def main():
@@ -155,6 +183,10 @@ def main():
         default=None, metavar="SRRXXXXXXX",
         help="Accession number of SRA run to align")
     parser.add_argument(
+        '-i', '--index',
+        default=None, metavar="PATH",
+        help="Genome idex to use for alignment")
+    parser.add_argument(
         '-M', '--max-reads',
         type=int, default=None, metavar="N",
         help="Maximum reads to align")
@@ -163,34 +195,25 @@ def main():
         default=None, metavar="FILE",
         help="Path to output BAM file")
     parser.add_argument(
+        '-p', '--pipeline',
+        choices=pipelines.keys(), default='star',
+        help="The alignment pipeline to use")
+    parser.add_argument(
         '-t', '--threads',
         type=int, default=1, metavar="N",
         help="Number of threads to use for alignment")
-    parser.add_argument(
-        '-i', '--index',
-        default=None, metavar="PATH",
-        help="Genome idex to use for alignment")
+    parser.add_arguments(
+        '--aligner-args',
+        deafult="", metavar="ARGS",
+        help="String of additional arguments to pass to the aligner")
     parser.add_argument(
         '--batch-size',
         type=int, default=5000, metavar="N",
         help="Number of reads to process in each batch.")
     args = parser.parse_args()
     
-    reader = sra_reader(
-        args.sra_accession,
-        batch_size=args.batch_size,
-        max_reads=args.max_reads)
-    
-    pipeline = mock_align
-    
-    with TempDir() as workdir:
-        with pipeline(
-                args.output_bam,
-                workdir,
-                args.threads,
-                args.index) as writer:
-            for read_pair in reader:
-                writer(*read_pair)
+    pipeline = pipelines.get(args.pipeline)
+    pipeline(args)
 
 if __name__ == "__main__":
     main()
