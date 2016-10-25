@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pipeline.pipeline import run_pipeline, list_pipelines
+
 # Main
 
 def main():
@@ -17,9 +18,11 @@ def main():
         type=int, default=None, metavar="N",
         help="Maximum reads to align")
     parser.add_argument(
-        '-o', '--output-bam',
-        default="-", metavar="FILE",
-        help="Path to output BAM file")
+        '-o', '--output',
+        default="-", metavar="PATH",
+        help="Path to output. For 'star' and 'histat' pipelines, this must be "
+            "a file (including '-' for stdout). For 'kallisto', this must be a "
+            "directory.")
     parser.add_argument(
         '-p', '--pipeline',
         choices=list_pipelines(), default='star',

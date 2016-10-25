@@ -93,7 +93,7 @@ def star_pipeline(args):
         with open_(args.output_bam, 'wb') as bam:
             cmd = normalize_whitespace("""
                 STAR --runThreadN {threads} --genomeDir {index}
-                    --readFilesIn {Read1} {Read2}
+                    --readFilesIn {fifo1} {fifo2}
                     --outSAMtype BAM SortedByCoordinate
                     --outStd BAM SortedByCoordinate
                     --outMultimapperOrder Random
@@ -101,8 +101,8 @@ def star_pipeline(args):
             """.format(
                 threads=args.threads,
                 index=args.index,
-                Read1=fifo1,
-                Read2=fifo2,
+                fifo1=fifo1,
+                fifo2=fifo2,
                 extra=args.aligner_args
             ))
             with Popen(cmd, stdout=bam) as proc:
@@ -129,6 +129,25 @@ def hisat_pipeline(args):
         with Popen(cmd, stdout=bam) as proc:
             proc.wait()
 
+def kallisto_pipeline(args):
+    with TempDir() as workdir:
+        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        cmd = normalize_whitespace("""
+            kallisto quant -i {index} -o {output} {fifo1} {fifo2}
+        """.format(
+            index=args.index,
+            output=args.output,
+            fifo1=fifo1,
+            fifo2=fifo2))
+        with Popen(cmd) as proc:
+            with FifoWriter(fifo1, fifo2, fastq) as writer:
+                for read_pair in sra_reader(
+                        args.sra_accession,
+                        batch_size=args.batch_size,
+                        max_reads=args.max_reads):
+                    writer(*read_pair)
+            proc.wait()
+
 def mock_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
@@ -141,6 +160,7 @@ def mock_pipeline(args):
 pipelines = dict(
     star=star_pipeline,
     hisat=hisat_pipeline,
+    kallisto=kallisto_pipeline,
     mock=mock_pipeline)
 
 # Main interface
