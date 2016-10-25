@@ -7,7 +7,7 @@ if sys.version_info < (3, 3):
     sys.exit(1)
 
 setup(
-    name='pipeline',
+    name='evc-pipeline',
     version='0.1',
     description='Our UltraFast (tm) pipeline for calling expressed variants',
     url='https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL',
@@ -15,6 +15,7 @@ setup(
     author_email='john.didion@nih.gov',
     license='MIT',
     packages=['pipeline'],
+    scripts = ['scripts/align.py'],
     package_dir={'pipeline': 'src'},
     classifiers=[
         'Development Status :: 3 - Alpha',

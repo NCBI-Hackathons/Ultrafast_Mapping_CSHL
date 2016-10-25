@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+
 from contextlib import contextmanager
 import os
 from subprocess import Popen, PIPE
@@ -129,7 +129,7 @@ def hisat_pipeline(args):
         with Popen(cmd, stdout=bam) as proc:
             proc.wait()
 
-def mock_pipeline(outfile, workdir, threads, index):
+def mock_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
@@ -143,46 +143,11 @@ pipelines = dict(
     hisat=hisat_pipeline,
     mock=mock_pipeline)
 
-# Main
+# Main interface
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument(
-        '-a', '--sra-accession',
-        default=None, metavar="SRRXXXXXXX",
-        help="Accession number of SRA run to align")
-    parser.add_argument(
-        '-i', '--index',
-        default=None, metavar="PATH",
-        help="Genome idex to use for alignment")
-    parser.add_argument(
-        '-M', '--max-reads',
-        type=int, default=None, metavar="N",
-        help="Maximum reads to align")
-    parser.add_argument(
-        '-o', '--output-bam',
-        default="-", metavar="FILE",
-        help="Path to output BAM file")
-    parser.add_argument(
-        '-p', '--pipeline',
-        choices=pipelines.keys(), default='star',
-        help="The alignment pipeline to use")
-    parser.add_argument(
-        '-t', '--threads',
-        type=int, default=1, metavar="N",
-        help="Number of threads to use for alignment")
-    parser.add_arguments(
-        '--aligner-args',
-        deafult="", metavar="ARGS",
-        help="String of additional arguments to pass to the aligner")
-    parser.add_argument(
-        '--batch-size',
-        type=int, default=5000, metavar="N",
-        help="Number of reads to process in each batch.")
-    args = parser.parse_args()
-    
+def list_pipelines():
+    return list(pipelines.keys())
+
+def run_pipeline(args):
     pipeline = pipelines.get(args.pipeline)
     pipeline(args)
-
-if __name__ == "__main__":
-    main()
