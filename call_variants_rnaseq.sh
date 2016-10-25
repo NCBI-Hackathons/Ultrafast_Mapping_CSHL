@@ -9,7 +9,7 @@ DBSNP_VCF=$6
 INTERVALS=$7
 OUTDIR=$8
 GOLD_INDELS=$9
-THREADS=$10
+THREADS=${10}
 
 OUTNAME=`basename ${BAM} .bam`
 
@@ -22,6 +22,8 @@ CMD="${JAVA} -Xms${GATK_MEM} -jar ${GATK_JAR} \
 	-rf ReassignOneMappingQuality \
 	-RMQF 255 -RMQT 60 -U ALLOW_N_CIGAR_READS"
 
+echo "${CMD}"
+eval "${CMD}"
 
 OUT2="${OUTDIR}/${OUTNAME}.rnaseq.vcf"
 CMD="${JAVA} -jar -Xmx${GATK_MEM} ${GATK_JAR} \
@@ -39,7 +41,7 @@ CMD="${JAVA} -jar -Xmx${GATK_MEM} ${GATK_JAR} \
 
 
 echo "${CMD}"
-
+eval "${CMD}"
 
 
 
