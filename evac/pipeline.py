@@ -3,7 +3,9 @@
 """
 from contextlib import contextmanager
 import copy
+import logging
 import os
+import shlex
 from subprocess import Popen, PIPE
 
 from evac.utils import *
@@ -11,6 +13,8 @@ from evac.utils import *
 from ngs import NGS
 from ngs.Read import Read
 from ngs.ErrorMsg import ErrorMsg
+
+log = logging.getLogger()
 
 # Readers
 
@@ -200,7 +204,7 @@ def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         with open_(args.output_bam, 'wb') as bam:
-            cmd = normalize_whitespace("""
+            cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
                     --readFilesIn {fifo1} {fifo2}
                     --outSAMtype BAM SortedByCoordinate
@@ -215,6 +219,7 @@ def star_pipeline(args):
                 fifo2=fifo2,
                 extra=args.aligner_args
             ))
+            log.info("Running command: {}".format(' '.join(cmd)))
             with Popen(cmd, stdout=bam) as proc:
                 with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
                     for read_pair in sra_reader(
@@ -231,7 +236,7 @@ def star_pipeline(args):
 
 def hisat_pipeline(args):
     with open_(args.output_bam, 'wb') as bam:
-        cmd = normalize_whitespace("""
+        cmd = shlex.split("""
             {exe} -p {threads} -x {index} --sra-acc {accn} {extra}
                 | sambamba view -S -t {threads} -f bam /dev/stdin
                 | sambamba sort -t {threads} /dev/stdin
@@ -242,6 +247,7 @@ def hisat_pipeline(args):
             index=args.index,
             extra=args.aligner_args
         ))
+        log.info("Running command: {}".format(' '.join(cmd)))
         with Popen(cmd, stdout=bam, shell=True) as proc:
             proc.wait()
 
@@ -253,7 +259,7 @@ def kallisto_pipeline(args):
             libtype = '--fr-stranded'
         elif 'R' in args.libtype:
             libtype = '--rf-stranded'
-        cmd = normalize_whitespace("""
+        cmd = shlex.split("""
             {exe} quant -t {threads} -i {index} -o {output}
                 {libtype} {extra} {fifo1} {fifo2}
         """.format(
@@ -265,6 +271,7 @@ def kallisto_pipeline(args):
             extra=args.aligner_args,
             fifo1=fifo1,
             fifo2=fifo2))
+        log.info("Running command: {}".format(' '.join(cmd)))
         with Popen(cmd) as proc:
             with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
                 for read_pair in sra_reader(
@@ -277,7 +284,7 @@ def kallisto_pipeline(args):
 def salmon_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        cmd = normalize_whitespace("""
+        cmd = shlex.split("""
             {exe} quant -p {threads} -i {index} -l {libtype}
                 {extra} -1 {fifo1} -2 {fifo2} -o {output}
         """.format(
@@ -289,6 +296,7 @@ def salmon_pipeline(args):
             extra=args.aligner_args,
             fifo1=fifo1,
             fifo2=fifo2))
+        log.info("Running command: {}".format(' '.join(cmd)))
         with Popen(cmd) as proc:
             with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
                 for read_pair in sra_reader(

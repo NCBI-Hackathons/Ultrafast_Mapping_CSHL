@@ -5,10 +5,6 @@ import shutil
 import sys
 import tempfile
 
-whitespace = re.compile('\s+')
-def normalize_whitespace(s):
-    tuple(filter(None, whitespace.split(s)))
-
 @contextmanager
 def open_(path, mode, **kwargs):
     """Open a file without worrying whether it's an actual path or '-' (for
