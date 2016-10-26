@@ -239,7 +239,7 @@ def star_pipeline(args):
                         writer(*read_pair)
                 if progress:
                     print("\nWaiting for STAR to finish...")
-                proc.wait()
+                proc.communicate()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
