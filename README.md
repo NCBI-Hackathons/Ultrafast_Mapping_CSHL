@@ -4,6 +4,9 @@ The current tools for identification of expressed variants are either slow or in
 
 Our pipeline identifies expressed variants from public databases such as NCBI SRA as well as user’s own RNA-Seq data using one of several RNA aligners and quantification tools.
 
+Presentation: [Hackathon end presentation](https://docs.google.com/presentation/d/1dUL5vSF2vqZljXa7FQJ6D-1eldAw0Gb-YeKrk9Gun8Q/pub?start=false&loop=false&delayms=3000)
+
+
 ## Installation
 
 ```
