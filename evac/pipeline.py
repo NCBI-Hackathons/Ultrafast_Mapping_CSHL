@@ -65,12 +65,12 @@ class SraPipeline(object):
                 not args.quiet or args.log_level == 'ERROR' or args.log_file)
             sra_proc = stream_sra_reads(
                 self.script_dir, args, progress, fifo1, fifo2)
-            with self.align(args) as align_proc:
+            with self.align(args, fifo1, fifo2) as align_proc:
                 for proc in (sra_proc, align_proc):
                     proc.wait()
 
 class StarPipeline(SraPipeline):
-    def align(self, args):
+    def align(self, args, fifo1, fifo2):
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
@@ -92,7 +92,7 @@ class StarPipeline(SraPipeline):
             yield Popen(cmd, stdout=bam)
 
 class KallistoPipeline(SraPipeline):
-    def align(self, args):
+    def align(self, args, fifo1, fifo2):
         libtype = ''
         if 'F' in args.libtype:
             libtype = '--fr-stranded'
@@ -114,7 +114,7 @@ class KallistoPipeline(SraPipeline):
         yield Popen(cmd)
 
 class SalmonPipeline(SraPipeline):
-    def align(self, args):
+    def align(self, args, fifo1, fifo2):
         cmd = shlex.split("""
             {exe} quant -p {threads} -i {index} -l {libtype}
                 {extra} -1 {fifo1} -2 {fifo2} -o {output}
