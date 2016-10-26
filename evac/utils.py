@@ -43,3 +43,10 @@ class TempDir(object):
         for path in fifo_paths:
             os.mkfifo(path, **kwargs)
         return fifo_paths
+
+def wrap_progress(iterable, **kwargs):
+    try:
+        import tqdm
+        return tqdm.tqdm(iterable, **kwargs)
+    except:
+        return iterable

@@ -59,9 +59,8 @@ def sra_reader(accn, batch_size=1000, max_reads=None):
     Yields:
         Each pair of reads (see ``sra_read_pair``)
     """
-    with NGS.openReadCollection(accn) as run:
+    def run_iter(run, read_count):
         run_name = run.getName()
-        read_count = run.getReadCount()
         if max_reads:
             max_reads = min(read_count, max_reads)
         else:
@@ -76,6 +75,12 @@ def sra_reader(accn, batch_size=1000, max_reads=None):
                 for read_idx in range(cur_batch_size):
                     read.nextRead()
                     yield sra_read_pair(read)
+    
+    with NGS.openReadCollection(accn) as run:
+        read_count = run.getReadCount()
+        itr = run_iter(run, read_count)
+        for read_pair in wrap_progress(itr, total=read_count):
+            yield read_paid
 
 # Writers
 
@@ -319,11 +324,11 @@ def sra_to_fastq_pipeline(args):
             fq1.write("@{}\n{}\n+\n{}\n".format(*read1))
             fq2.write("@{}\n{}\n+\n{}\n".format(*read2))
 
-def mock_pipeline(args):
+def head_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
-            max_reads=args.max_reads):
+            max_reads=args.max_reads or 10):
         print(read1[0] + ':')
         print('  ' + '\t'.join(read1[1:]))
         print('  ' + '\t'.join(read2[1:]))
@@ -334,7 +339,7 @@ pipelines = dict(
     kallisto=kallisto_pipeline,
     salmon=salmon_pipeline,
     fastq=sra_to_fastq_pipeline,
-    mock=mock_pipeline)
+    head=mock_pipeline)
 
 # Main interface
 
