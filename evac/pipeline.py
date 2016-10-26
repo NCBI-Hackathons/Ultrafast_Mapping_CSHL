@@ -123,7 +123,7 @@ class BatchWriter(object):
         """
         self.add_to_batch(*read1, self.read1_batch, self.index)
         self.add_to_batch(*read2, self.read2_batch, self.index)
-        self.index += lines_per_row
+        self.index += self.lines_per_row
         if self.index >= self.batch_size:
             self.flush()
     
