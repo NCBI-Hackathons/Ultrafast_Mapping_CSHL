@@ -150,8 +150,7 @@ class BatchWriter(object):
             self.writer(
                 self.linesep.join(self.read1_batch),
                 self.linesep.join(self.read2_batch))
-        if not last:
-            self.writer(self.linesep, self.linesep)
+        self.writer(self.linesep, self.linesep)
         self.index = 0
     
     def close(self):
@@ -205,6 +204,8 @@ class FifoWriter(object):
 # TODO: [JD] Pipe stderr of pipelines to logger
 
 def star_pipeline(args):
+    progress = args.progress and (
+        not args.quiet or args.log_level == 'ERROR' or args.log_file)
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         with open_(args.output, 'wb') as bam:
@@ -229,7 +230,8 @@ def star_pipeline(args):
                     for read_pair in sra_reader(
                             args.sra_accession,
                             batch_size=args.batch_size,
-                            max_reads=args.max_reads):
+                            max_reads=args.max_reads,
+                            progress=progress):
                         writer(*read_pair)
                 proc.wait()
 
@@ -360,7 +362,7 @@ def run_pipeline(args):
 
 def setup_logging(args):
     if not logging.root.handlers:
-        level = getattr(logging, args.log_level)
+        level = 'ERROR' if args.quiet else getattr(logging, args.log_level)
         if args.log_file:
             handler = logging.FileHandler(args.log_file)
         else:
