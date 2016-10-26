@@ -1,4 +1,5 @@
 
+Annotate VCF file with RefSeq genes and other features.  
 
 
 Usage help: ./VarRefSeqAnnotation.py -h
@@ -14,11 +15,45 @@ optional arguments:
   -asm ASM          input assembly info text file (ie.
                     /home/data/GCF_000001405.35.assembly.txt
 
+Available Features:
+	antisense_RNA
+	C_gene_segment
+	cDNA_match
+	CDS
+	centromere
+	D_gene_segment
+	D_loop
+	enhancer
+	exon
+	gene
+	J_gene_segment
+	lnc_RNA
+	match
+	miRNA
+	mRNA
+	ncRNA
+	primary_transcript
+	promoter
+	region
+	repeat_region
+	RNase_MRP_RNA
+	RNase_P_RNA
+	rRNA
+	sequence_feature
+	snoRNA
+	snRNA
+	SRP_RNA
+	telomerase_RNA
+	transcript
+	tRNA
+	V_gene_segment
+	vault_RNA
+	Y_RNA
 
 Data source:
 VCF - user provided VCF.  Example use dbSNP VCF.
 NCBI Assembly info files: ftp://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/All/GCF_000001405.28.assembly.txt
-NCBI RefSeq info file: 
+NCBI RefSeq info file: ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/H_sapiens
 
 Example: 
 ./VarRefSeqAnnotation.py -feature gene -gff test_RefSeq.gff -vcf test_SNV.vcf.gz -asm test_GCF_000001405.35.assembly.txt 
