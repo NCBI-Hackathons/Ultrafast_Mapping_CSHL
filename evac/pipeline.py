@@ -236,7 +236,9 @@ def star_pipeline(args):
                             batch_size=args.batch_size,
                             max_reads=args.max_reads,
                             progress=progress):
+                        print('writing {}'.format(read_pair[0][0]))
                         writer(*read_pair)
+                        print('wrote {}'.format(read_pair[0][0]))
                 if progress:
                     print("\nWaiting for STAR to finish...")
                 proc.communicate()
