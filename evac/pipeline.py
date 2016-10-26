@@ -132,10 +132,10 @@ class BatchWriter(object):
     
     def __exit__(self, exception_type, exception_value, traceback):
         if self.index > 0:
-            self.flush(last=True)
+            self.flush()
         self.close()
     
-    def flush(self, last=False):
+    def flush(self):
         """Flush the current read buffers to the underlying string writer.
         
         Args:
