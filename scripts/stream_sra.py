@@ -4,10 +4,7 @@ from evac.sra import *
 from evac.writers import *
 
 def stream_sra_reads(args):
-    bufsize = args.batch_size * 1024
-    writer = FastqWriter(
-        FileWriter(args.fastq1, args.fastq2, bufsize),
-        args.batch_size)
+    writer = FastqWriter(FileWriter(args.fastq1, args.fastq2), args.batch_size)
     with writer:
         for read_pair in sra_reader(
                 args.sra_accession,

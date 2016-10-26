@@ -57,7 +57,8 @@ def star_pipeline(args, script_dir):
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
             align_proc = Popen(cmd, stdout=bam)
-            for proc in (align_proc, sra_proc):
+            
+            for proc in (sra_proc, align_proc):
                 proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
