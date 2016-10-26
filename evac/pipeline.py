@@ -193,11 +193,8 @@ class FifoWriter(object):
     
     def close(self):
         for fifo in (self.fifo1, self.fifo2):
-            try:
-                fifo.flush()
-                fifo.close()
-            finally:
-                os.remove(fifo.name)
+            fifo.flush()
+            fifo.close()
 
 # Pipelines
 
