@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Aligner-agnostic alignment pipeline that reads from SRA.
 """
+from contextlib import contextmanager
 from inspect import isclass
 import logging
 import shlex
@@ -70,6 +71,7 @@ class SraPipeline(object):
                     proc.wait()
 
 class StarPipeline(SraPipeline):
+    @contextmanager
     def align(self, args, fifo1, fifo2):
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
@@ -92,6 +94,7 @@ class StarPipeline(SraPipeline):
             yield Popen(cmd, stdout=bam)
 
 class KallistoPipeline(SraPipeline):
+    @contextmanager
     def align(self, args, fifo1, fifo2):
         libtype = ''
         if 'F' in args.libtype:
@@ -114,6 +117,7 @@ class KallistoPipeline(SraPipeline):
         yield Popen(cmd)
 
 class SalmonPipeline(SraPipeline):
+    @contextmanager
     def align(self, args, fifo1, fifo2):
         cmd = shlex.split("""
             {exe} quant -p {threads} -i {index} -l {libtype}
