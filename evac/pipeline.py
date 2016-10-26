@@ -54,9 +54,12 @@ def star_pipeline(args, script_dir):
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
             align_proc = Popen(cmd, stdout=bam)
+            import time
+            time.sleep(2)
             progress = args.progress and (
                 not args.quiet or args.log_level == 'ERROR' or args.log_file)
             sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
+            align_proc.wait()
             sra_proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
