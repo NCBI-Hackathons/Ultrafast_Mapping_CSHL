@@ -19,13 +19,13 @@ log = logging.getLogger()
 def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
     script = os.path.join(script_dir, "stream_sra.py")
     cmd = shlex.split("""
-        {exe} {script} -a {accn} -M {max_reads} --batch-size {batch_size}
-            {progress} {fifo1} {fifo2}
+        {exe} {script} -a {accn} --batch-size {batch_size}
+            {max_reads} {progress} {fifo1} {fifo2}
     """.format(
         exe=sys.executable,
         script=script,
         accn=args.sra_accession,
-        max_reads=args.max_reads,
+        max_reads='--max-reads {}'.format(args.max_reads) if args.max_reads else '',
         batch_size=args.batch_size,
         progress='--progress' if progress else '',
         fifo1=fifo1,
