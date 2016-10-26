@@ -7,16 +7,15 @@ if sys.version_info < (3, 3):
     sys.exit(1)
 
 setup(
-    name='pipeline',
+    name='evac',
     version='0.1',
-    description='Our UltraFast (tm) pipeline for calling expressed variants',
+    description='Our UltraFast (tm) pipeline for Expressed VAriant Calling',
     url='https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL',
-    author='Andrew Fant, Ben Busby, John Didion, Morgan Taschuk, Upendra K?',
+    author='Andrew Fant, Ben Busby, John Didion, Morgan Taschuk, Upendra Kumar',
     author_email='john.didion@nih.gov',
     license='MIT',
-    packages=['pipeline'],
+    packages=['evac'],
     scripts = ['scripts/align.py'],
-    package_dir={'pipeline': 'src'},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT',

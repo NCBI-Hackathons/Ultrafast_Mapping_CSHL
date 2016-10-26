@@ -5,7 +5,7 @@ from contextlib import contextmanager
 import os
 from subprocess import Popen, PIPE
 
-from pipeline.utils import *
+from evac.utils import *
 
 from ngs import NGS
 from ngs.Read import Read

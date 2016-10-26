@@ -1,6 +1,6 @@
 #!/bin/env python
 import sys
-from utils import TempDir
+from evac.utils import TempDir
 
 JAVA=sys.argv[1]
 GATK_JAR=sys.argv[2]
@@ -43,7 +43,7 @@ while True:
 
 #create interval files for GATK parallelizing
 #we create Picard-format files instead of providing on the command line because
-#GRCh38 has contigs with colons : in them, which GATK will choke on 
+#GRCh38 has contigs with colons : in them, which GATK will choke on
 
 from math import ceil
 
@@ -91,7 +91,7 @@ with TempDir() as workdir:
     p = Pool(int(THREADS))
     p.map(hapcall,cmds)
  
-#Combine the separate GVCFs together 
+#Combine the separate GVCFs together
 #if necessary
 CMD=[ JAVA, "-jar", "-Xmx"+GATK_MEM, GATK_JAR,
      "-R", REF,

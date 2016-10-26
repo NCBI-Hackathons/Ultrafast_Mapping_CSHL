@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from pipeline.pipeline import run_pipeline, list_pipelines
+from evac.pipeline import run_pipeline, list_pipelines
 
 # Main
 
