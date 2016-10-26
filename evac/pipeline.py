@@ -184,8 +184,6 @@ class FifoWriter(object):
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, fifo1, fifo2, **kwargs):
-        self.fifo1_path = fifo1
-        self.fifo2_path = fifo2
         self.fifo1 = open(fifo1, 'wt', **kwargs)
         self.fifo2 = open(fifo2, 'wt', **kwargs)
     
@@ -194,12 +192,12 @@ class FifoWriter(object):
         self.fifo2.write(read2_str)
     
     def close(self):
-        for fifo in (self.fifo1_path, self.fifo2_path):
+        for fifo in (self.fifo1, self.fifo2):
             try:
                 fifo.flush()
                 fifo.close()
             finally:
-                os.remove(fifo)
+                os.remove(fifo.name)
 
 # Pipelines
 
