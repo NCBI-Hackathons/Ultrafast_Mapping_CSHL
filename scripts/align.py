@@ -44,10 +44,39 @@ def main():
         help="String of additional arguments to pass to the aligner")
     parser.add_argument(
         '--batch-size',
-        type=int, default=5000, metavar="N",
+        type=int, default=1000, metavar="N",
         help="Number of reads to process in each batch.")
-    args = parser.parse_args()
-    run_pipeline(args)
+    parser.add_argument(
+        '--temp-dir',
+        default=None, metavar="DIR",
+        help="The root directory to use for temporary files/directories")
+    parser.add_argument(
+        '--no-progress',
+        action='store_false', default=True, dest='progress',
+        help="No progress bar.")
+    parser.add_argument(
+        '--log-file',
+        default=None, metavar="FILE",
+        help="File for log messages (defaults to stdout)")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        '--log-level',
+        default="ERROR", metavar="LEVEL",
+        help="Logging level")
+    group.add_argument(
+        '-q', '--quiet',
+        action='store_true', default=False,
+        help="Only write error messages (equivalent to "
+            "--log-level ERROR --no-progress)")
+    
+    # Paths to aligners
+    # TODO: move this into a config file
+    parser.add_argument('--star')
+    parser.add_argument('--hisat2')
+    parser.add_argument('--kallisto')
+    parser.add_argument('--salmon')
+    
+    run_pipeline(parser.parse_args())
 
 if __name__ == "__main__":
     main()

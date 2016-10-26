@@ -5,10 +5,6 @@ import shutil
 import sys
 import tempfile
 
-whitespace = re.compile('\s+')
-def normalize_whitespace(s):
-    tuple(filter(None, whitespace.split(s)))
-
 @contextmanager
 def open_(path, mode, **kwargs):
     """Open a file without worrying whether it's an actual path or '-' (for
@@ -47,3 +43,10 @@ class TempDir(object):
         for path in fifo_paths:
             os.mkfifo(path, **kwargs)
         return fifo_paths
+
+def wrap_progress(iterable, **kwargs):
+    try:
+        import tqdm
+        return tqdm.tqdm(iterable, **kwargs)
+    except:
+        return iterable
