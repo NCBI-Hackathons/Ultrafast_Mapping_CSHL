@@ -130,7 +130,7 @@ class BatchWriter(object):
     def __enter__(self):
         return self
     
-    def __exit__(exception_type, exception_value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback):
         if self.index > 0:
             self.flush(last=True)
         self.close()
@@ -170,7 +170,7 @@ class FastqWriter(BatchWriter):
     def _create_batch_list(self):
         return [None, None, '+', None] * self.batch_size
     
-    def add_to_batch(name, sequence, qualities, batch, index):
+    def add_to_batch(self, name, sequence, qualities, batch, index):
         batch[index] = '@' + name
         batch[index+1] = sequence
         batch[index+3] = qualities
