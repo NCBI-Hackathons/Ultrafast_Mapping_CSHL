@@ -35,9 +35,6 @@ def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
 def star_pipeline(args, script_dir):
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        progress = args.progress and (
-            not args.quiet or args.log_level == 'ERROR' or args.log_file)
-        sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
@@ -57,9 +54,9 @@ def star_pipeline(args, script_dir):
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
             align_proc = Popen(cmd, stdout=bam)
-            outs, errs = align_proc.communicate()
-            print(outs)
-            print(errs)
+            progress = args.progress and (
+                not args.quiet or args.log_level == 'ERROR' or args.log_file)
+            sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
             sra_proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
