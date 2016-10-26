@@ -151,7 +151,6 @@ class BatchWriter(object):
                 self.linesep.join(self.read1_batch[0:self.index]),
                 self.linesep.join(self.read2_batch[0:self.index]))
         else:
-            print('writing')
             self.writer(
                 self.linesep.join(self.read1_batch),
                 self.linesep.join(self.read2_batch))
@@ -192,13 +191,14 @@ class FifoWriter(object):
         self.fifo2 = open(fifo2, 'wt', **kwargs)
     
     def __call__(self, read1_str, read2_str):
-        print('writing 1')
-        self.fifo1.write(read1_str)
-        print('writing 2')
+        try:
+            self.fifo1.write(read1_str)
+        except Exception as e:
+            print(e)
+            raise
         self.fifo2.write(read2_str)
     
     def close(self):
-        print('close')
         for fifo in (self.fifo1, self.fifo2):
             fifo.flush()
             fifo.close()
