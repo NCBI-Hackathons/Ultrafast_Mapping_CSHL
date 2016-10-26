@@ -208,7 +208,7 @@ class FifoWriter(object):
 # TODO: [JD] Pipe stderr of pipelines to logger
 
 def star_pipeline(args):
-    with TempDir(dir=args.tempdir) as workdir:
+    with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
@@ -258,7 +258,7 @@ def hisat_pipeline(args):
             proc.wait()
 
 def kallisto_pipeline(args):
-    with TempDir(dir=args.tempdir) as workdir:
+    with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         libtype = ''
         if 'F' in args.libtype:
@@ -288,7 +288,7 @@ def kallisto_pipeline(args):
             proc.wait()
 
 def salmon_pipeline(args):
-    with TempDir(dir=args.tempdir) as workdir:
+    with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         cmd = shlex.split("""
             {exe} quant -p {threads} -i {index} -l {libtype}
