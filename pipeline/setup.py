@@ -15,6 +15,7 @@ setup(
     author_email='john.didion@nih.gov',
     license='MIT',
     packages=['pipeline'],
+    scripts = ['scripts/align.py'],
     package_dir={'pipeline': 'src'},
     classifiers=[
         'Development Status :: 3 - Alpha',

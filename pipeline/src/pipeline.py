@@ -1,4 +1,6 @@
-from argparse import ArgumentParser
+# -*- coding: utf-8 -*-
+"""Aligner-agnostic alignment pipeline that reads from SRA.
+"""
 from contextlib import contextmanager
 import os
 from subprocess import Popen, PIPE
@@ -87,13 +89,17 @@ class FifoWriter(object):
 
 # Pipelines
 
+# TODO: [JD] These have lots of redundant code right now. I will be adding
+# alternate readers for local FASTQ and SAM/BAM/CRAM files and refactoring the
+# Pipelines to accept an arbitrary reader.
+
 def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         with open_(args.output_bam, 'wb') as bam:
             cmd = normalize_whitespace("""
                 STAR --runThreadN {threads} --genomeDir {index}
-                    --readFilesIn {Read1} {Read2}
+                    --readFilesIn {fifo1} {fifo2}
                     --outSAMtype BAM SortedByCoordinate
                     --outStd BAM SortedByCoordinate
                     --outMultimapperOrder Random
@@ -101,8 +107,8 @@ def star_pipeline(args):
             """.format(
                 threads=args.threads,
                 index=args.index,
-                Read1=fifo1,
-                Read2=fifo2,
+                fifo1=fifo1,
+                fifo2=fifo2,
                 extra=args.aligner_args
             ))
             with Popen(cmd, stdout=bam) as proc:
@@ -129,7 +135,58 @@ def hisat_pipeline(args):
         with Popen(cmd, stdout=bam) as proc:
             proc.wait()
 
-def mock_pipeline(outfile, workdir, threads, index):
+def kallisto_pipeline(args):
+    with TempDir() as workdir:
+        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        libtype = ''
+        if 'F' in args.libtype:
+            libtype = '--fr-stranded'
+        elif 'R' in args.libtype:
+            libtype = '--rf-stranded'
+        cmd = normalize_whitespace("""
+            kallisto quant -t {threads} -i {index} -o {output}
+                {libtype} {extra} {fifo1} {fifo2}
+        """.format(
+            threads=args.threads,
+            index=args.index,
+            output=args.output,
+            libtype=libtype,
+            extra=args.aligner_args,
+            fifo1=fifo1,
+            fifo2=fifo2))
+        with Popen(cmd) as proc:
+            with FifoWriter(fifo1, fifo2, fastq) as writer:
+                for read_pair in sra_reader(
+                        args.sra_accession,
+                        batch_size=args.batch_size,
+                        max_reads=args.max_reads):
+                    writer(*read_pair)
+            proc.wait()
+
+def salmon_pipeline(args):
+    with TempDir() as workdir:
+        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        cmd = normalize_whitespace("""
+            salmon quant -p {threads} -i {index} -l {libtype}
+                {extra} -1 {fifo1} -2 {fifo2} -o {output}
+        """.format(
+            threads=args.threads,
+            index=args.index,
+            libtype=args.libtype,
+            output=args.output,
+            extra=args.aligner_args,
+            fifo1=fifo1,
+            fifo2=fifo2))
+        with Popen(cmd) as proc:
+            with FifoWriter(fifo1, fifo2, fastq) as writer:
+                for read_pair in sra_reader(
+                        args.sra_accession,
+                        batch_size=args.batch_size,
+                        max_reads=args.max_reads):
+                    writer(*read_pair)
+            proc.wait()
+
+def mock_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
@@ -141,48 +198,14 @@ def mock_pipeline(outfile, workdir, threads, index):
 pipelines = dict(
     star=star_pipeline,
     hisat=hisat_pipeline,
+    kallisto=kallisto_pipeline,
     mock=mock_pipeline)
 
-# Main
+# Main interface
 
-def main():
-    parser = ArgumentParser()
-    parser.add_argument(
-        '-a', '--sra-accession',
-        default=None, metavar="SRRXXXXXXX",
-        help="Accession number of SRA run to align")
-    parser.add_argument(
-        '-i', '--index',
-        default=None, metavar="PATH",
-        help="Genome idex to use for alignment")
-    parser.add_argument(
-        '-M', '--max-reads',
-        type=int, default=None, metavar="N",
-        help="Maximum reads to align")
-    parser.add_argument(
-        '-o', '--output-bam',
-        default="-", metavar="FILE",
-        help="Path to output BAM file")
-    parser.add_argument(
-        '-p', '--pipeline',
-        choices=pipelines.keys(), default='star',
-        help="The alignment pipeline to use")
-    parser.add_argument(
-        '-t', '--threads',
-        type=int, default=1, metavar="N",
-        help="Number of threads to use for alignment")
-    parser.add_arguments(
-        '--aligner-args',
-        deafult="", metavar="ARGS",
-        help="String of additional arguments to pass to the aligner")
-    parser.add_argument(
-        '--batch-size',
-        type=int, default=5000, metavar="N",
-        help="Number of reads to process in each batch.")
-    args = parser.parse_args()
-    
+def list_pipelines():
+    return list(pipelines.keys())
+
+def run_pipeline(args):
     pipeline = pipelines.get(args.pipeline)
     pipeline(args)
-
-if __name__ == "__main__":
-    main()
