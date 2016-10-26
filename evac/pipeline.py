@@ -46,7 +46,7 @@ def sra_read_pair(read_pair):
     
     return (read1, read2)
 
-def sra_reader(accn, batch_size=1000, max_reads=None):
+def sra_reader(accn, batch_size=1000, max_reads=None, progress=True):
     """Iterates through a read collection for a given accession number using
     the ngs-lib python bindings.
     
@@ -59,12 +59,8 @@ def sra_reader(accn, batch_size=1000, max_reads=None):
     Yields:
         Each pair of reads (see ``sra_read_pair``)
     """
-    def run_iter(run, read_count):
+    def run_iter(run, max_reads):
         run_name = run.getName()
-        if max_reads:
-            max_reads = min(read_count, max_reads)
-        else:
-            max_reads = read_count
         for batch_num, first_read in enumerate(
                 range(1, max_reads, batch_size)):
             cur_batch_size = min(
@@ -78,9 +74,13 @@ def sra_reader(accn, batch_size=1000, max_reads=None):
     
     with NGS.openReadCollection(accn) as run:
         read_count = run.getReadCount()
-        itr = run_iter(run, read_count)
-        for read_pair in wrap_progress(itr, total=read_count):
-            yield read_paid
+        if max_reads:
+            max_reads = min(read_count, max_reads)
+        else:
+            max_reads = read_count
+        itr = run_iter(run, max_reads)
+        for read_pair in wrap_progress(itr, disable=not progress, total=max_reads):
+            yield read_pair
 
 # Writers
 
@@ -328,7 +328,8 @@ def head_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
-            max_reads=args.max_reads or 10):
+            max_reads=args.max_reads or 10,
+            progress=False):
         print(read1[0] + ':')
         print('  ' + '\t'.join(read1[1:]))
         print('  ' + '\t'.join(read2[1:]))
@@ -339,7 +340,7 @@ pipelines = dict(
     kallisto=kallisto_pipeline,
     salmon=salmon_pipeline,
     fastq=sra_to_fastq_pipeline,
-    head=mock_pipeline)
+    head=head_pipeline)
 
 # Main interface
 
