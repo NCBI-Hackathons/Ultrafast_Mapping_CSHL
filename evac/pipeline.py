@@ -187,8 +187,8 @@ class FifoWriter(object):
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, fifo1, fifo2, **kwargs):
-        self.fifo1 = open(fifo1, 'wt', **kwargs)
-        self.fifo2 = open(fifo2, 'wt', **kwargs)
+        self.fifo1 = open(fifo1, 'wt', 0, **kwargs)
+        self.fifo2 = open(fifo2, 'wt', 0, **kwargs)
     
     def __call__(self, read1_str, read2_str):
         try:
