@@ -227,7 +227,7 @@ def star_pipeline(args):
                 extra=args.aligner_args
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
-            with Popen(cmd, stdout=bam) as proc:
+            with Popen(cmd, bufsize=1, stdout=bam, universal_newlines=True) as proc:
                 with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
                     for read_pair in sra_reader(
                             args.sra_accession,
@@ -235,7 +235,6 @@ def star_pipeline(args):
                             max_reads=args.max_reads):
                         writer(*read_pair)
                 proc.wait()
-
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
