@@ -1,0 +1,200 @@
+# Assembly name:  GRCh38.p9
+# Description:    Genome Reference Consortium Human Build 38 patch release 9 (GRCh38.p9)
+# Organism name:  Homo sapiens (human)
+# Taxid:          9606
+# BioProject:     PRJNA168
+# Submitter:      Genome Reference Consortium
+# Date:           2016-9-26
+# Assembly type:  haploid-with-alt-loci
+# Release type:   patch
+# Assembly level: Chromosome
+# Genome representation: full
+# RefSeq category: Reference Genome
+# GenBank assembly accession: GCA_000001405.24
+# RefSeq assembly accession: GCF_000001405.35
+# RefSeq assembly and GenBank assemblies identical: yes
+#
+## Assembly-Units:
+## GenBank Unit Accession	RefSeq Unit Accession	Assembly-Unit name
+## GCA_000001305.2	GCF_000001305.14	Primary Assembly
+## GCA_000005045.22	GCF_000005045.21	PATCHES
+## GCA_000001315.2	GCF_000001315.2	ALT_REF_LOCI_1
+## GCA_000001325.2	GCF_000001325.3	ALT_REF_LOCI_2
+## GCA_000001335.2	GCF_000001335.2	ALT_REF_LOCI_3
+## GCA_000001345.2	GCF_000001345.2	ALT_REF_LOCI_4
+## GCA_000001355.2	GCF_000001355.2	ALT_REF_LOCI_5
+## GCA_000001365.2	GCF_000001365.3	ALT_REF_LOCI_6
+## GCA_000001375.2	GCF_000001375.2	ALT_REF_LOCI_7
+## GCA_000510225.1	GCF_000510225.1	ALT_REF_LOCI_8
+## GCA_000510235.1	GCF_000510235.1	ALT_REF_LOCI_9
+## GCA_000509915.1	GCF_000509915.1	ALT_REF_LOCI_10
+## GCA_000509925.1	GCF_000509925.1	ALT_REF_LOCI_11
+## GCA_000509935.1	GCF_000509935.1	ALT_REF_LOCI_12
+## GCA_000509945.1	GCF_000509945.1	ALT_REF_LOCI_13
+## GCA_000509955.1	GCF_000509955.1	ALT_REF_LOCI_14
+## GCA_000509965.1	GCF_000509965.1	ALT_REF_LOCI_15
+## GCA_000509975.1	GCF_000509975.1	ALT_REF_LOCI_16
+## GCA_000509985.1	GCF_000509985.1	ALT_REF_LOCI_17
+## GCA_000509995.1	GCF_000509995.1	ALT_REF_LOCI_18
+## GCA_000510005.1	GCF_000510005.1	ALT_REF_LOCI_19
+## GCA_000510015.1	GCF_000510015.1	ALT_REF_LOCI_20
+## GCA_000510025.1	GCF_000510025.1	ALT_REF_LOCI_21
+## GCA_000510035.1	GCF_000510035.1	ALT_REF_LOCI_22
+## GCA_000510045.1	GCF_000510045.1	ALT_REF_LOCI_23
+## GCA_000510055.1	GCF_000510055.1	ALT_REF_LOCI_24
+## GCA_000510065.1	GCF_000510065.1	ALT_REF_LOCI_25
+## GCA_000510075.1	GCF_000510075.1	ALT_REF_LOCI_26
+## GCA_000510085.1	GCF_000510085.1	ALT_REF_LOCI_27
+## GCA_000510095.1	GCF_000510095.1	ALT_REF_LOCI_28
+## GCA_000510105.1	GCF_000510105.1	ALT_REF_LOCI_29
+## GCA_000510125.1	GCF_000510125.1	ALT_REF_LOCI_30
+## GCA_000510135.1	GCF_000510135.1	ALT_REF_LOCI_31
+## GCA_000510145.1	GCF_000510145.1	ALT_REF_LOCI_32
+## GCA_000510155.1	GCF_000510155.1	ALT_REF_LOCI_33
+## GCA_000510165.1	GCF_000510165.1	ALT_REF_LOCI_34
+## GCA_000510175.1	GCF_000510175.1	ALT_REF_LOCI_35
+## GCA_000006015.1	GCF_000006015.1	non-nuclear
+#
+# Ordered by chromosome/plasmid; the chromosomes/plasmids are followed by
+# unlocalized scaffolds.
+# Unplaced scaffolds are listed at the end.
+# RefSeq is equal or derived from GenBank object.
+#
+# Sequence-Name	Sequence-Role	Assigned-Molecule	Assigned-Molecule-Location/Type	GenBank-Accn	Relationship	RefSeq-Accn	Assembly-Unit	Sequence-Length	UCSC-style-name
+1	assembled-molecule	1	Chromosome	CM000663.2	=	NC_000001.11	Primary Assembly	248956422	chr1
+2	assembled-molecule	2	Chromosome	CM000664.2	=	NC_000002.12	Primary Assembly	242193529	chr2
+3	assembled-molecule	3	Chromosome	CM000665.2	=	NC_000003.12	Primary Assembly	198295559	chr3
+4	assembled-molecule	4	Chromosome	CM000666.2	=	NC_000004.12	Primary Assembly	190214555	chr4
+5	assembled-molecule	5	Chromosome	CM000667.2	=	NC_000005.10	Primary Assembly	181538259	chr5
+6	assembled-molecule	6	Chromosome	CM000668.2	=	NC_000006.12	Primary Assembly	170805979	chr6
+7	assembled-molecule	7	Chromosome	CM000669.2	=	NC_000007.14	Primary Assembly	159345973	chr7
+8	assembled-molecule	8	Chromosome	CM000670.2	=	NC_000008.11	Primary Assembly	145138636	chr8
+9	assembled-molecule	9	Chromosome	CM000671.2	=	NC_000009.12	Primary Assembly	138394717	chr9
+10	assembled-molecule	10	Chromosome	CM000672.2	=	NC_000010.11	Primary Assembly	133797422	chr10
+11	assembled-molecule	11	Chromosome	CM000673.2	=	NC_000011.10	Primary Assembly	135086622	chr11
+12	assembled-molecule	12	Chromosome	CM000674.2	=	NC_000012.12	Primary Assembly	133275309	chr12
+13	assembled-molecule	13	Chromosome	CM000675.2	=	NC_000013.11	Primary Assembly	114364328	chr13
+14	assembled-molecule	14	Chromosome	CM000676.2	=	NC_000014.9	Primary Assembly	107043718	chr14
+15	assembled-molecule	15	Chromosome	CM000677.2	=	NC_000015.10	Primary Assembly	101991189	chr15
+16	assembled-molecule	16	Chromosome	CM000678.2	=	NC_000016.10	Primary Assembly	90338345	chr16
+17	assembled-molecule	17	Chromosome	CM000679.2	=	NC_000017.11	Primary Assembly	83257441	chr17
+18	assembled-molecule	18	Chromosome	CM000680.2	=	NC_000018.10	Primary Assembly	80373285	chr18
+19	assembled-molecule	19	Chromosome	CM000681.2	=	NC_000019.10	Primary Assembly	58617616	chr19
+20	assembled-molecule	20	Chromosome	CM000682.2	=	NC_000020.11	Primary Assembly	64444167	chr20
+21	assembled-molecule	21	Chromosome	CM000683.2	=	NC_000021.9	Primary Assembly	46709983	chr21
+22	assembled-molecule	22	Chromosome	CM000684.2	=	NC_000022.11	Primary Assembly	50818468	chr22
+X	assembled-molecule	X	Chromosome	CM000685.2	=	NC_000023.11	Primary Assembly	156040895	chrX
+Y	assembled-molecule	Y	Chromosome	CM000686.2	=	NC_000024.10	Primary Assembly	57227415	chrY
+HSCHR1_CTG1_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270706.1	=	NT_187361.1	Primary Assembly	175055	chr1_KI270706v1_random
+HSCHR1_CTG2_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270707.1	=	NT_187362.1	Primary Assembly	32032	chr1_KI270707v1_random
+HSCHR1_CTG3_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270708.1	=	NT_187363.1	Primary Assembly	127682	chr1_KI270708v1_random
+HSCHR1_CTG4_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270709.1	=	NT_187364.1	Primary Assembly	66860	chr1_KI270709v1_random
+HSCHR1_CTG5_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270710.1	=	NT_187365.1	Primary Assembly	40176	chr1_KI270710v1_random
+HSCHR1_CTG6_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270711.1	=	NT_187366.1	Primary Assembly	42210	chr1_KI270711v1_random
+HSCHR1_CTG7_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270712.1	=	NT_187367.1	Primary Assembly	176043	chr1_KI270712v1_random
+HSCHR1_CTG8_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270713.1	=	NT_187368.1	Primary Assembly	40745	chr1_KI270713v1_random
+HSCHR1_CTG9_UNLOCALIZED	unlocalized-scaffold	1	Chromosome	KI270714.1	=	NT_187369.1	Primary Assembly	41717	chr1_KI270714v1_random
+HSCHR2_RANDOM_CTG1	unlocalized-scaffold	2	Chromosome	KI270715.1	=	NT_187370.1	Primary Assembly	161471	chr2_KI270715v1_random
+HSCHR2_RANDOM_CTG2	unlocalized-scaffold	2	Chromosome	KI270716.1	=	NT_187371.1	Primary Assembly	153799	chr2_KI270716v1_random
+HSCHR3UN_CTG2	unlocalized-scaffold	3	Chromosome	GL000221.1	=	NT_167215.1	Primary Assembly	155397	chr3_GL000221v1_random
+HSCHR4_RANDOM_CTG4	unlocalized-scaffold	4	Chromosome	GL000008.2	=	NT_113793.3	Primary Assembly	209709	chr4_GL000008v2_random
+HSCHR5_RANDOM_CTG1	unlocalized-scaffold	5	Chromosome	GL000208.1	=	NT_113948.1	Primary Assembly	92689	chr5_GL000208v1_random
+HSCHR9_UNLOCALIZED_CTG1	unlocalized-scaffold	9	Chromosome	KI270717.1	=	NT_187372.1	Primary Assembly	40062	chr9_KI270717v1_random
+HSCHR9_UNLOCALIZED_CTG2	unlocalized-scaffold	9	Chromosome	KI270718.1	=	NT_187373.1	Primary Assembly	38054	chr9_KI270718v1_random
+HSCHR9_UNLOCALIZED_CTG3	unlocalized-scaffold	9	Chromosome	KI270719.1	=	NT_187374.1	Primary Assembly	176845	chr9_KI270719v1_random
+HSCHR9_UNLOCALIZED_CTG4	unlocalized-scaffold	9	Chromosome	KI270720.1	=	NT_187375.1	Primary Assembly	39050	chr9_KI270720v1_random
+HSCHR11_CTG1_UNLOCALIZED	unlocalized-scaffold	11	Chromosome	KI270721.1	=	NT_187376.1	Primary Assembly	100316	chr11_KI270721v1_random
+HSCHR14_CTG1_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	GL000009.2	=	NT_113796.3	Primary Assembly	201709	chr14_GL000009v2_random
+HSCHR14_CTG4_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	GL000194.1	=	NT_113888.1	Primary Assembly	191469	chr14_GL000194v1_random
+HSCHR14_CTG2_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	GL000225.1	=	NT_167219.1	Primary Assembly	211173	chr14_GL000225v1_random
+HSCHR14_CTG3_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	KI270722.1	=	NT_187377.1	Primary Assembly	194050	chr14_KI270722v1_random
+HSCHR14_CTG5_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	KI270723.1	=	NT_187378.1	Primary Assembly	38115	chr14_KI270723v1_random
+HSCHR14_CTG6_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	KI270724.1	=	NT_187379.1	Primary Assembly	39555	chr14_KI270724v1_random
+HSCHR14_CTG7_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	KI270725.1	=	NT_187380.1	Primary Assembly	172810	chr14_KI270725v1_random
+HSCHR14_CTG8_UNLOCALIZED	unlocalized-scaffold	14	Chromosome	KI270726.1	=	NT_187381.1	Primary Assembly	43739	chr14_KI270726v1_random
+HSCHR15_RANDOM_CTG1	unlocalized-scaffold	15	Chromosome	KI270727.1	=	NT_187382.1	Primary Assembly	448248	chr15_KI270727v1_random
+HSCHR16_RANDOM_CTG1	unlocalized-scaffold	16	Chromosome	KI270728.1	=	NT_187383.1	Primary Assembly	1872759	chr16_KI270728v1_random
+HSCHR17_RANDOM_CTG3	unlocalized-scaffold	17	Chromosome	GL000205.2	=	NT_113930.2	Primary Assembly	185591	chr17_GL000205v2_random
+HSCHR17_RANDOM_CTG4	unlocalized-scaffold	17	Chromosome	KI270729.1	=	NT_187384.1	Primary Assembly	280839	chr17_KI270729v1_random
+HSCHR17_RANDOM_CTG5	unlocalized-scaffold	17	Chromosome	KI270730.1	=	NT_187385.1	Primary Assembly	112551	chr17_KI270730v1_random
+HSCHR22_UNLOCALIZED_CTG1	unlocalized-scaffold	22	Chromosome	KI270731.1	=	NT_187386.1	Primary Assembly	150754	chr22_KI270731v1_random
+HSCHR22_UNLOCALIZED_CTG2	unlocalized-scaffold	22	Chromosome	KI270732.1	=	NT_187387.1	Primary Assembly	41543	chr22_KI270732v1_random
+HSCHR22_UNLOCALIZED_CTG3	unlocalized-scaffold	22	Chromosome	KI270733.1	=	NT_187388.1	Primary Assembly	179772	chr22_KI270733v1_random
+HSCHR22_UNLOCALIZED_CTG4	unlocalized-scaffold	22	Chromosome	KI270734.1	=	NT_187389.1	Primary Assembly	165050	chr22_KI270734v1_random
+HSCHR22_UNLOCALIZED_CTG5	unlocalized-scaffold	22	Chromosome	KI270735.1	=	NT_187390.1	Primary Assembly	42811	chr22_KI270735v1_random
+HSCHR22_UNLOCALIZED_CTG6	unlocalized-scaffold	22	Chromosome	KI270736.1	=	NT_187391.1	Primary Assembly	181920	chr22_KI270736v1_random
+HSCHR22_UNLOCALIZED_CTG7	unlocalized-scaffold	22	Chromosome	KI270737.1	=	NT_187392.1	Primary Assembly	103838	chr22_KI270737v1_random
+HSCHR22_UNLOCALIZED_CTG8	unlocalized-scaffold	22	Chromosome	KI270738.1	=	NT_187393.1	Primary Assembly	99375	chr22_KI270738v1_random
+HSCHR22_UNLOCALIZED_CTG9	unlocalized-scaffold	22	Chromosome	KI270739.1	=	NT_187394.1	Primary Assembly	73985	chr22_KI270739v1_random
+HSCHRY_RANDOM_CTG1	unlocalized-scaffold	Y	Chromosome	KI270740.1	=	NT_187395.1	Primary Assembly	37240	chrY_KI270740v1_random
+HSCHRUN_RANDOM_CTG1	unplaced-scaffold	na	na	GL000195.1	=	NT_113901.1	Primary Assembly	182896	chrUn_GL000195v1
+HSCHRUN_RANDOM_CTG2	unplaced-scaffold	na	na	GL000213.1	=	NT_167208.1	Primary Assembly	164239	chrUn_GL000213v1
+HSCHRUN_RANDOM_CTG4	unplaced-scaffold	na	na	GL000214.1	=	NT_167209.1	Primary Assembly	137718	chrUn_GL000214v1
+HSCHRUN_RANDOM_CTG6	unplaced-scaffold	na	na	GL000216.2	=	NT_167211.2	Primary Assembly	176608	chrUn_GL000216v2
+HSCHRUN_RANDOM_CTG9	unplaced-scaffold	na	na	GL000218.1	=	NT_113889.1	Primary Assembly	161147	chrUn_GL000218v1
+HSCHRUN_RANDOM_CTG10	unplaced-scaffold	na	na	GL000219.1	=	NT_167213.1	Primary Assembly	179198	chrUn_GL000219v1
+HSCHRUN_RANDOM_CTG11	unplaced-scaffold	na	na	GL000220.1	=	NT_167214.1	Primary Assembly	161802	chrUn_GL000220v1
+HSCHRUN_RANDOM_CTG16	unplaced-scaffold	na	na	GL000224.1	=	NT_167218.1	Primary Assembly	179693	chrUn_GL000224v1
+HSCHRUN_RANDOM_CTG19	unplaced-scaffold	na	na	GL000226.1	=	NT_167220.1	Primary Assembly	15008	chrUn_GL000226v1
+HSCHRUN_RANDOM_100	unplaced-scaffold	na	na	KI270302.1	=	NT_187396.1	Primary Assembly	2274	chrUn_KI270302v1
+HSCHRUN_RANDOM_102	unplaced-scaffold	na	na	KI270303.1	=	NT_187398.1	Primary Assembly	1942	chrUn_KI270303v1
+HSCHRUN_RANDOM_101	unplaced-scaffold	na	na	KI270304.1	=	NT_187397.1	Primary Assembly	2165	chrUn_KI270304v1
+HSCHRUN_RANDOM_103	unplaced-scaffold	na	na	KI270305.1	=	NT_187399.1	Primary Assembly	1472	chrUn_KI270305v1
+HSCHRUN_RANDOM_106	unplaced-scaffold	na	na	KI270310.1	=	NT_187402.1	Primary Assembly	1201	chrUn_KI270310v1
+HSCHRUN_RANDOM_110	unplaced-scaffold	na	na	KI270311.1	=	NT_187406.1	Primary Assembly	12399	chrUn_KI270311v1
+HSCHRUN_RANDOM_109	unplaced-scaffold	na	na	KI270312.1	=	NT_187405.1	Primary Assembly	998	chrUn_KI270312v1
+HSCHRUN_RANDOM_108	unplaced-scaffold	na	na	KI270315.1	=	NT_187404.1	Primary Assembly	2276	chrUn_KI270315v1
+HSCHRUN_RANDOM_107	unplaced-scaffold	na	na	KI270316.1	=	NT_187403.1	Primary Assembly	1444	chrUn_KI270316v1
+HSCHRUN_RANDOM_111	unplaced-scaffold	na	na	KI270317.1	=	NT_187407.1	Primary Assembly	37690	chrUn_KI270317v1
+HSCHRUN_RANDOM_105	unplaced-scaffold	na	na	KI270320.1	=	NT_187401.1	Primary Assembly	4416	chrUn_KI270320v1
+HSCHRUN_RANDOM_104	unplaced-scaffold	na	na	KI270322.1	=	NT_187400.1	Primary Assembly	21476	chrUn_KI270322v1
+HSCHRUN_RANDOM_167	unplaced-scaffold	na	na	KI270329.1	=	NT_187459.1	Primary Assembly	1040	chrUn_KI270329v1
+HSCHRUN_RANDOM_166	unplaced-scaffold	na	na	KI270330.1	=	NT_187458.1	Primary Assembly	1652	chrUn_KI270330v1
+HSCHRUN_RANDOM_169	unplaced-scaffold	na	na	KI270333.1	=	NT_187461.1	Primary Assembly	2699	chrUn_KI270333v1
+HSCHRUN_RANDOM_168	unplaced-scaffold	na	na	KI270334.1	=	NT_187460.1	Primary Assembly	1368	chrUn_KI270334v1
+HSCHRUN_RANDOM_170	unplaced-scaffold	na	na	KI270335.1	=	NT_187462.1	Primary Assembly	1048	chrUn_KI270335v1
+HSCHRUN_RANDOM_173	unplaced-scaffold	na	na	KI270336.1	=	NT_187465.1	Primary Assembly	1026	chrUn_KI270336v1
+HSCHRUN_RANDOM_174	unplaced-scaffold	na	na	KI270337.1	=	NT_187466.1	Primary Assembly	1121	chrUn_KI270337v1
+HSCHRUN_RANDOM_171	unplaced-scaffold	na	na	KI270338.1	=	NT_187463.1	Primary Assembly	1428	chrUn_KI270338v1
+HSCHRUN_RANDOM_172	unplaced-scaffold	na	na	KI270340.1	=	NT_187464.1	Primary Assembly	1428	chrUn_KI270340v1
+HSCHRUN_RANDOM_177	unplaced-scaffold	na	na	KI270362.1	=	NT_187469.1	Primary Assembly	3530	chrUn_KI270362v1
+HSCHRUN_RANDOM_175	unplaced-scaffold	na	na	KI270363.1	=	NT_187467.1	Primary Assembly	1803	chrUn_KI270363v1
+HSCHRUN_RANDOM_176	unplaced-scaffold	na	na	KI270364.1	=	NT_187468.1	Primary Assembly	2855	chrUn_KI270364v1
+HSCHRUN_RANDOM_178	unplaced-scaffold	na	na	KI270366.1	=	NT_187470.1	Primary Assembly	8320	chrUn_KI270366v1
+HSCHRUN_RANDOM_202	unplaced-scaffold	na	na	KI270371.1	=	NT_187494.1	Primary Assembly	2805	chrUn_KI270371v1
+HSCHRUN_RANDOM_199	unplaced-scaffold	na	na	KI270372.1	=	NT_187491.1	Primary Assembly	1650	chrUn_KI270372v1
+HSCHRUN_RANDOM_200	unplaced-scaffold	na	na	KI270373.1	=	NT_187492.1	Primary Assembly	1451	chrUn_KI270373v1
+HSCHRUN_RANDOM_198	unplaced-scaffold	na	na	KI270374.1	=	NT_187490.1	Primary Assembly	2656	chrUn_KI270374v1
+HSCHRUN_RANDOM_201	unplaced-scaffold	na	na	KI270375.1	=	NT_187493.1	Primary Assembly	2378	chrUn_KI270375v1
+HSCHRUN_RANDOM_197	unplaced-scaffold	na	na	KI270376.1	=	NT_187489.1	Primary Assembly	1136	chrUn_KI270376v1
+HSCHRUN_RANDOM_179	unplaced-scaffold	na	na	KI270378.1	=	NT_187471.1	Primary Assembly	1048	chrUn_KI270378v1
+HSCHRUN_RANDOM_180	unplaced-scaffold	na	na	KI270379.1	=	NT_187472.1	Primary Assembly	1045	chrUn_KI270379v1
+HSCHRUN_RANDOM_194	unplaced-scaffold	na	na	KI270381.1	=	NT_187486.1	Primary Assembly	1930	chrUn_KI270381v1
+HSCHRUN_RANDOM_196	unplaced-scaffold	na	na	KI270382.1	=	NT_187488.1	Primary Assembly	4215	chrUn_KI270382v1
+HSCHRUN_RANDOM_190	unplaced-scaffold	na	na	KI270383.1	=	NT_187482.1	Primary Assembly	1750	chrUn_KI270383v1
+HSCHRUN_RANDOM_192	unplaced-scaffold	na	na	KI270384.1	=	NT_187484.1	Primary Assembly	1658	chrUn_KI270384v1
+HSCHRUN_RANDOM_195	unplaced-scaffold	na	na	KI270385.1	=	NT_187487.1	Primary Assembly	990	chrUn_KI270385v1
+HSCHRUN_RANDOM_188	unplaced-scaffold	na	na	KI270386.1	=	NT_187480.1	Primary Assembly	1788	chrUn_KI270386v1
+HSCHRUN_RANDOM_183	unplaced-scaffold	na	na	KI270387.1	=	NT_187475.1	Primary Assembly	1537	chrUn_KI270387v1
+HSCHRUN_RANDOM_186	unplaced-scaffold	na	na	KI270388.1	=	NT_187478.1	Primary Assembly	1216	chrUn_KI270388v1
+HSCHRUN_RANDOM_181	unplaced-scaffold	na	na	KI270389.1	=	NT_187473.1	Primary Assembly	1298	chrUn_KI270389v1
+HSCHRUN_RANDOM_182	unplaced-scaffold	na	na	KI270390.1	=	NT_187474.1	Primary Assembly	2387	chrUn_KI270390v1
+HSCHRUN_RANDOM_189	unplaced-scaffold	na	na	KI270391.1	=	NT_187481.1	Primary Assembly	1484	chrUn_KI270391v1
+HSCHRUN_RANDOM_193	unplaced-scaffold	na	na	KI270392.1	=	NT_187485.1	Primary Assembly	971	chrUn_KI270392v1
+HSCHRUN_RANDOM_191	unplaced-scaffold	na	na	KI270393.1	=	NT_187483.1	Primary Assembly	1308	chrUn_KI270393v1
+HSCHRUN_RANDOM_187	unplaced-scaffold	na	na	KI270394.1	=	NT_187479.1	Primary Assembly	970	chrUn_KI270394v1
+HSCHRUN_RANDOM_184	unplaced-scaffold	na	na	KI270395.1	=	NT_187476.1	Primary Assembly	1143	chrUn_KI270395v1
+HSCHRUN_RANDOM_185	unplaced-scaffold	na	na	KI270396.1	=	NT_187477.1	Primary Assembly	1880	chrUn_KI270396v1
+HSCHRUN_RANDOM_113	unplaced-scaffold	na	na	KI270411.1	=	NT_187409.1	Primary Assembly	2646	chrUn_KI270411v1
+HSCHRUN_RANDOM_112	unplaced-scaffold	na	na	KI270412.1	=	NT_187408.1	Primary Assembly	1179	chrUn_KI270412v1
+HSCHRUN_RANDOM_114	unplaced-scaffold	na	na	KI270414.1	=	NT_187410.1	Primary Assembly	2489	chrUn_KI270414v1
+HSCHRUN_RANDOM_119	unplaced-scaffold	na	na	KI270417.1	=	NT_187415.1	Primary Assembly	2043	chrUn_KI270417v1
+HSCHRUN_RANDOM_116	unplaced-scaffold	na	na	KI270418.1	=	NT_187412.1	Primary Assembly	2145	chrUn_KI270418v1
+HSCHRUN_RANDOM_115	unplaced-scaffold	na	na	KI270419.1	=	NT_187411.1	Primary Assembly	1029	chrUn_KI270419v1
+HSCHRUN_RANDOM_117	unplaced-scaffold	na	na	KI270420.1	=	NT_187413.1	Primary Assembly	2321	chrUn_KI270420v1
+HSCHRUN_RANDOM_120	unplaced-scaffold	na	na	KI270422.1	=	NT_187416.1	Primary Assembly	1445	chrUn_KI270422v1
+HSCHRUN_RANDOM_121	unplaced-scaffold	na	na	KI270423.1	=	NT_187417.1	Primary Assembly	981	chrUn_KI270423v1
+HSCHRUN_RANDOM_118	unplaced-scaffold	na	na	KI270424.1	=	NT_187414.1	Primary Assembly	2140	chrUn_KI270424v1
+HSCHRUN_RANDOM_122	unplaced-scaffold	na	na	KI270425.1	=	NT_187418.1	Primary Assembly	1884	chrUn_KI270425v1
+HSCHRUN_RANDOM_123	unplaced-scaffold	na	na	KI270429.1	=	NT_187419.1	Primary Assembly	1361	chrUn_KI270429v1
+HSCHRUN_RANDOM_128	unplaced-scaffold	na	na	KI270435.1	=	NT_187424.1	Primary Assembly	92983	chrUn_KI270435v1
