@@ -122,14 +122,10 @@ class BatchWriter(object):
             read1: read1 tuple (name, sequence, qualities)
             read2: read2 tuple
         """
-        print('add 1 {}'.format(read1[0]))
         self.add_to_batch(*read1, self.read1_batch, self.index)
-        print('add 2 {}'.format(read2[0]))
         self.add_to_batch(*read2, self.read2_batch, self.index)
         self.index += self.lines_per_row
-        print(self.index)
         if self.index >= self.bufsize:
-            print('flush')
             self.flush()
     
     def __enter__(self):
@@ -155,6 +151,7 @@ class BatchWriter(object):
                 self.linesep.join(self.read1_batch[0:self.index]),
                 self.linesep.join(self.read2_batch[0:self.index]))
         else:
+            print('writing')
             self.writer(
                 self.linesep.join(self.read1_batch),
                 self.linesep.join(self.read2_batch))
@@ -195,10 +192,13 @@ class FifoWriter(object):
         self.fifo2 = open(fifo2, 'wt', **kwargs)
     
     def __call__(self, read1_str, read2_str):
+        print('writing 1')
         self.fifo1.write(read1_str)
+        print('writing 2')
         self.fifo2.write(read2_str)
     
     def close(self):
+        print('close')
         for fifo in (self.fifo1, self.fifo2):
             fifo.flush()
             fifo.close()
