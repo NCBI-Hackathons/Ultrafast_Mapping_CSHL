@@ -187,19 +187,19 @@ class FifoWriter(object):
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, fifo1, fifo2, **kwargs):
-        self.fifo1 = open(fifo1, 'w', 0, **kwargs)
-        self.fifo2 = open(fifo2, 'w', 0, **kwargs)
+        self.fifo1 = open(fifo1, 'wb', 0, **kwargs)
+        self.fifo2 = open(fifo2, 'wb', 0, **kwargs)
     
     def __call__(self, read1_str, read2_str):
         try:
             print('writing')
-            self.fifo1.write(read1_str)
+            self.fifo1.write(read1_str.encode())
             print('written')
         except Exception as e:
             print('error:')
             print(e)
             raise
-        self.fifo2.write(read2_str)
+        self.fifo2.write(read2_str.encode())
     
     def close(self):
         for fifo in (self.fifo1, self.fifo2):
