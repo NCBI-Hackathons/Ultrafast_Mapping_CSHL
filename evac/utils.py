@@ -20,7 +20,7 @@ def open_(path, mode, **kwargs):
 
 class TempDir(object):
     def __init__(self, **kwargs):
-        self.root = tempfile.mkdtemp(**kwargs)
+        self.root = os.path.abspath(tempfile.mkdtemp(**kwargs))
     
     def __enter__(self):
         return self
