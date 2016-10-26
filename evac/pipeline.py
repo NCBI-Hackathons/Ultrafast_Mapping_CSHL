@@ -59,9 +59,14 @@ def sra_reader(accn, batch_size=5000, max_reads=None):
 
 # Writers
 
+# TODO: [JD] It is about 3x faster to pre-allocate an array of
+# `batch_size` * `format_lines` (e.g. batch_size*4 for FASTQ) and then fill the
+# array and do `'\n'.join(batch_array)`, rather than doing a separate str.format
+# for each read (see tests/join_vs_format.py)
+
 def fastq(name, sequence, qualities):
     return "@{name}\n{sequence}\n+\n{qualities}\n".format(
-        name, sequence, qualities)
+        name=name, sequence=sequence, qualities=qualities)
 
 class FifoWriter(object):
     def __init__(self, fifo1, fifo2, read_format, **kwargs):
@@ -120,6 +125,11 @@ def star_pipeline(args):
                         writer(*read_pair)
                 proc.wait()
 
+
+# TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
+# way of doing things, but I want to benchmark the alternative (chained Popens)
+# to make sure it's not any slower.
+
 def hisat_pipeline(args):
     with open_(args.output_bam, 'wb') as bam:
         cmd = normalize_whitespace("""
@@ -132,7 +142,7 @@ def hisat_pipeline(args):
             index=args.index,
             extra=args.aligner_args
         ))
-        with Popen(cmd, stdout=bam) as proc:
+        with Popen(cmd, stdout=bam, shell=True) as proc:
             proc.wait()
 
 def kallisto_pipeline(args):
@@ -199,6 +209,7 @@ pipelines = dict(
     star=star_pipeline,
     hisat=hisat_pipeline,
     kallisto=kallisto_pipeline,
+    salmon=salmon_pipeline,
     mock=mock_pipeline)
 
 # Main interface
@@ -207,5 +218,5 @@ def list_pipelines():
     return list(pipelines.keys())
 
 def run_pipeline(args):
-    pipeline = pipelines.get(args.pipeline)
+    pipeline = pipelines[args.pipeline]
     pipeline(args)
