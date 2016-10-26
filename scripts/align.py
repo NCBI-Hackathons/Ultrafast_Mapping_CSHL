@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
+import os
 from evac.pipeline import run_pipeline, list_pipelines
 
 # Main
 
-def main():
+def main(script_dir):
     parser = ArgumentParser()
     parser.add_argument(
         '-a', '--sra-accession',
@@ -76,7 +77,7 @@ def main():
     parser.add_argument('--kallisto')
     parser.add_argument('--salmon')
     
-    run_pipeline(parser.parse_args())
+    run_pipeline(parser.parse_args(), script_dir)
 
 if __name__ == "__main__":
-    main()
+    main(os.path.dirname(__file__))

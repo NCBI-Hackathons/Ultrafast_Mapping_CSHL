@@ -1,210 +1,12 @@
 # -*- coding: utf-8 -*-
 """Aligner-agnostic alignment pipeline that reads from SRA.
 """
-from contextlib import contextmanager
-import copy
 import logging
-import os
 import shlex
 from subprocess import Popen, PIPE
-
 from evac.utils import *
 
-from ngs import NGS
-from ngs.Read import Read
-from ngs.ErrorMsg import ErrorMsg
-
 log = logging.getLogger()
-
-# Readers
-
-def sra_read_pair(read_pair):
-    """Creates a pair of tuples (name, sequence, qualities) from the current
-    read of an ngs.ReadIterator.
-    """
-    read_name = read_pair.getReadName()
-    if read_pair.getNumFragments() != 2:
-        raise Exception("Read {} is not paired".format(read_name))
-        
-    read_group = read_pair.getReadGroup()
-    
-    read_pair.nextFragment()
-    if not read_pair.isPaired():
-        raise Exception("Read {} is not paired".format(read_name))
-    read1 = (
-        read_name,
-        read_pair.getFragmentBases(),
-        read_pair.getFragmentQualities())
-    
-    read_pair.nextFragment()
-    if not read_pair.isPaired():
-        raise Exception("Read {} is not paired".format(read_name))
-    read2 = (
-        read_name,
-        read_pair.getFragmentBases(),
-        read_pair.getFragmentQualities())
-    
-    return (read1, read2)
-
-def sra_reader(accn, batch_size=1000, max_reads=None, progress=True):
-    """Iterates through a read collection for a given accession number using
-    the ngs-lib python bindings.
-    
-    Args:
-        accn: The accession number
-        batch_size: The maximum number of reads to request in each call to SRA
-        max_reads: The total number of reads to process, or all reads in the
-            SRA run if None
-    
-    Yields:
-        Each pair of reads (see ``sra_read_pair``)
-    """
-    def run_iter(run, max_reads):
-        run_name = run.getName()
-        for batch_num, first_read in enumerate(
-                range(1, max_reads, batch_size)):
-            cur_batch_size = min(
-                batch_size,
-                max_reads - first_read + 1)
-            with run.getReadRange(
-                    first_read, cur_batch_size, Read.all) as read:
-                for read_idx in range(cur_batch_size):
-                    read.nextRead()
-                    yield sra_read_pair(read)
-    
-    with NGS.openReadCollection(accn) as run:
-        read_count = run.getReadCount()
-        if max_reads:
-            max_reads = min(read_count, max_reads)
-        else:
-            max_reads = read_count
-        itr = run_iter(run, max_reads)
-        for read_pair in wrap_progress(itr, disable=not progress, total=max_reads):
-            yield read_pair
-
-# Writers
-
-class BatchWriter(object):
-    """Wrapper for a string writer (e.g. FifoWriter) that improves performance
-    by buffering a set number of reads and sending them as a single call to the
-    string writer.
-    
-    Args:
-        writer: The string writer to wrap. Must be callable with two arguments
-            (read1 string, read2 string)
-        batch_size: The size of the read buffer
-        lines_per_row: The number of lines used by each read for the specific
-            file format (should be passed by the subclass in a
-            super().__init__ call)
-        linesep: The separator to use between each line (defaults to os.linesep)
-    """
-    def __init__(self, writer, batch_size, lines_per_row, linesep=os.linesep):
-        self.writer = writer
-        self.batch_size = batch_size
-        self.lines_per_row = lines_per_row
-        self.bufsize = batch_size * lines_per_row
-        self.linesep = linesep
-        self.read1_batch = self._create_batch_list()
-        self.read2_batch = copy.copy(self.read1_batch)
-        self.index = 0
-    
-    def _create_batch_list(self):
-        """Create the list to use for buffering reads. Can be overridden, but
-        must return a list that is of size ``batch_size * lines_per_row``.
-        """
-        return [None] * self.bufsize
-    
-    def __call__(self, read1, read2):
-        """Add a read pair to the buffer. Writes the batch to the underlying
-        writer if the buffer is full.
-        
-        Args:
-            read1: read1 tuple (name, sequence, qualities)
-            read2: read2 tuple
-        """
-        self.add_to_batch(*read1, self.read1_batch, self.index)
-        self.add_to_batch(*read2, self.read2_batch, self.index)
-        self.index += self.lines_per_row
-        if self.index >= self.bufsize:
-            self.flush()
-    
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, exception_type, exception_value, traceback):
-        print(exception_type)
-        print(exception_value)
-        print(traceback)
-        if self.index > 0:
-            self.flush()
-        self.close()
-    
-    def flush(self):
-        """Flush the current read buffers to the underlying string writer.
-        
-        Args:
-            last: Is this the last call to flush? If not, a trailing linesep
-                is written.
-        """
-        if self.index < self.bufsize:
-            self.writer(
-                self.linesep.join(self.read1_batch[0:self.index]),
-                self.linesep.join(self.read2_batch[0:self.index]))
-        else:
-            self.writer(
-                self.linesep.join(self.read1_batch),
-                self.linesep.join(self.read2_batch))
-        self.writer(self.linesep, self.linesep)
-        self.index = 0
-    
-    def close(self):
-        """Clear the buffers and close the underlying string writer.
-        """
-        self.read1_batch = None
-        self.read2_batch = None
-        self.writer.close()
-
-class FastqWriter(BatchWriter):
-    """BatchWriter implementation for FASTQ format.
-    """
-    def __init__(self, writer, batch_size):
-        super(FastqWriter, self).__init__(writer, batch_size, 4)
-    
-    def _create_batch_list(self):
-        return [None, None, '+', None] * self.batch_size
-    
-    def add_to_batch(self, name, sequence, qualities, batch, index):
-        batch[index] = '@' + name
-        batch[index+1] = sequence
-        batch[index+3] = qualities
-
-class FifoWriter(object):
-    """String writer that opens and writes to a pair of FIFOs.
-    
-    Args:
-        fifo1: Path to the read1 FIFOs
-        fifo2: Path to the read2 FIFOs
-        kwargs: Additional arguments to pass to the ``open`` call.
-    """
-    def __init__(self, fifo1, fifo2, **kwargs):
-        self.fifo1 = open(fifo1, 'wb', 0, **kwargs)
-        self.fifo2 = open(fifo2, 'wb', 0, **kwargs)
-    
-    def __call__(self, read1_str, read2_str):
-        try:
-            print('writing')
-            self.fifo1.write(read1_str.encode())
-            print('written')
-        except Exception as e:
-            print('error:')
-            print(e)
-            raise
-        self.fifo2.write(read2_str.encode())
-    
-    def close(self):
-        for fifo in (self.fifo1, self.fifo2):
-            fifo.flush()
-            fifo.close()
 
 # Pipelines
 
@@ -214,11 +16,28 @@ class FifoWriter(object):
 
 # TODO: [JD] Pipe stderr of pipelines to logger
 
-def star_pipeline(args):
-    progress = args.progress and (
-        not args.quiet or args.log_level == 'ERROR' or args.log_file)
+def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
+    script = os.path.join(script_dir, "stream_sra.py")
+    cmd = shlex.split("""
+        {exe} {script} -a {accn} -M {max_reads} --batch-size {batch_size}
+            {progress} {fifo1} {fifo2}
+    """.format(
+        exe=sys.executable,
+        script=script,
+        accn=args.sra_accession,
+        max_reads=args.max_reads,
+        batch_size=args.batch_size,
+        progress='--progress' if progress else '',
+        fifo1=fifo1,
+        fifo2=fifo2))
+    return Popen(cmd)
+
+def star_pipeline(args, script_dir):
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        progress = args.progress and (
+            not args.quiet or args.log_level == 'ERROR' or args.log_file)
+        sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
@@ -236,23 +55,16 @@ def star_pipeline(args):
                 extra=args.aligner_args
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
-            with Popen(cmd, bufsize=1, stdout=bam, universal_newlines=True) as proc:
-                with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
-                    for read_pair in sra_reader(
-                            args.sra_accession,
-                            batch_size=args.batch_size,
-                            max_reads=args.max_reads,
-                            progress=progress):
-                        writer(*read_pair)
-                if progress:
-                    print("\nWaiting for STAR to finish...")
-                proc.communicate()
+            align_proc = Popen(cmd, stdout=bam)
+            
+            for proc in (sra_proc, align_proc):
+                proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
 # to make sure it's not any slower.
 
-def hisat_pipeline(args):
+def hisat_pipeline(args, script_dir):
     with open_(args.output, 'wb') as bam:
         cmd = shlex.split("""
             {exe} -p {threads} -x {index} --sra-acc {accn} {extra}
@@ -269,7 +81,7 @@ def hisat_pipeline(args):
         with Popen(cmd, stdout=bam, shell=True) as proc:
             proc.wait()
 
-def kallisto_pipeline(args):
+def kallisto_pipeline(args, script_dir):
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         libtype = ''
@@ -299,7 +111,7 @@ def kallisto_pipeline(args):
                     writer(*read_pair)
             proc.wait()
 
-def salmon_pipeline(args):
+def salmon_pipeline(args, script_dir):
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         cmd = shlex.split("""
@@ -315,16 +127,21 @@ def salmon_pipeline(args):
             fifo1=fifo1,
             fifo2=fifo2))
         log.info("Running command: {}".format(' '.join(cmd)))
-        with Popen(cmd) as proc:
+        writer_proc =
+        reader_proc = Popen(cmd)
+        for proc in (writer_proc, reader_proc):
+            proc.wait()
+        
+        
             with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
                 for read_pair in sra_reader(
                         args.sra_accession,
                         batch_size=args.batch_size,
                         max_reads=args.max_reads):
                     writer(*read_pair)
-            proc.wait()
+            
 
-def sra_to_fastq_pipeline(args):
+def sra_to_fastq_pipeline(args, script_dir):
     fq1_path = args.output + '.1.fq'
     fq2_path = args.output + '.2.fq'
     with open(fq1_path, 'wt') as fq1, open(fq2_path, 'wt') as fq2:
@@ -335,7 +152,7 @@ def sra_to_fastq_pipeline(args):
             fq1.write("@{}\n{}\n+\n{}\n".format(*read1))
             fq2.write("@{}\n{}\n+\n{}\n".format(*read2))
 
-def head_pipeline(args):
+def head_pipeline(args, script_dir):
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,
@@ -363,7 +180,7 @@ def list_pipelines():
     """
     return list(pipelines.keys())
 
-def run_pipeline(args):
+def run_pipeline(args, script_dir):
     """Run a pipeline using a set of command-line args.
     
     Args:
@@ -371,7 +188,7 @@ def run_pipeline(args):
     """
     setup_logging(args)
     pipeline = pipelines[args.pipeline]
-    pipeline(args)
+    pipeline(args, script_dir)
 
 def setup_logging(args):
     if not logging.root.handlers:
@@ -380,7 +197,8 @@ def setup_logging(args):
             handler = logging.FileHandler(args.log_file)
         else:
             handler = logging.StreamHandler(sys.stderr)
-        handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s'))
         handler.setLevel(level)
         logging.getLogger().setLevel(level)
         logging.getLogger().addHandler(handler)
