@@ -29,8 +29,7 @@ class TempDir(object):
         self.close()
     
     def close(self):
-        #shutil.rmtree(self.root)
-        pass
+        shutil.rmtree(self.root)
     
     def make_path(self, relative_path):
         return os.path.join(self.root, relative_path)
