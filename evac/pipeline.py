@@ -192,8 +192,11 @@ class FifoWriter(object):
     
     def __call__(self, read1_str, read2_str):
         try:
+            print('writing')
             self.fifo1.write(read1_str)
+            print('written')
         except Exception as e:
+            print('error:')
             print(e)
             raise
         self.fifo2.write(read2_str)
