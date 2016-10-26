@@ -45,6 +45,7 @@ def star_pipeline(args, script_dir):
                     --outSAMtype BAM SortedByCoordinate
                     --outStd BAM_SortedByCoordinate
                     --outMultimapperOrder Random
+                    --outSAMunmapped Within KeepPairs
                     {extra}
             """.format(
                 exe=args.star or "STAR",
