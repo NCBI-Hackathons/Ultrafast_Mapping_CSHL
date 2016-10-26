@@ -122,10 +122,13 @@ class BatchWriter(object):
             read1: read1 tuple (name, sequence, qualities)
             read2: read2 tuple
         """
+        print('add 1 {}'.format(read1[0]))
         self.add_to_batch(*read1, self.read1_batch, self.index)
+        print('add 2 {}'.format(read2[0]))
         self.add_to_batch(*read2, self.read2_batch, self.index)
         self.index += self.lines_per_row
         if self.index >= self.bufsize:
+            print('flush')
             self.flush()
     
     def __enter__(self):
@@ -236,9 +239,7 @@ def star_pipeline(args):
                             batch_size=args.batch_size,
                             max_reads=args.max_reads,
                             progress=progress):
-                        print('writing {}'.format(read_pair[0][0]))
                         writer(*read_pair)
-                        print('wrote {}'.format(read_pair[0][0]))
                 if progress:
                     print("\nWaiting for STAR to finish...")
                 proc.communicate()
