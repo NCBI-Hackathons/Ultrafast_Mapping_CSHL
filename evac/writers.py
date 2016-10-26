@@ -107,10 +107,8 @@ class FileWriter(object):
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, file1, file2, bufsize, **kwargs):
-        def opener(path, flags):
-            return os.open(path, flags | os.O_NONBLOCK)
-        self.file1 = open(file1, 'wt', bufsize, opener=opener, **kwargs)
-        self.file2 = open(file2, 'wt', bufsize, opener=opener, **kwargs)
+        self.file1 = open(file1, 'wt', bufsize, **kwargs)
+        self.file2 = open(file2, 'wt', bufsize, **kwargs)
     
     def __call__(self, read1_str, read2_str):
         self.file1.write(read1_str)

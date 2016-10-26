@@ -35,6 +35,9 @@ def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
 def star_pipeline(args, script_dir):
     with TempDir(dir=args.temp_dir) as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+        progress = args.progress and (
+            not args.quiet or args.log_level == 'ERROR' or args.log_file)
+        sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
         with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
@@ -54,13 +57,8 @@ def star_pipeline(args, script_dir):
             ))
             log.info("Running command: {}".format(' '.join(cmd)))
             align_proc = Popen(cmd, stdout=bam)
-            import time
-            time.sleep(2)
-            progress = args.progress and (
-                not args.quiet or args.log_level == 'ERROR' or args.log_file)
-            sra_proc = stream_sra_reads(script_dir, args, progress, fifo1, fifo2)
-            align_proc.wait()
-            sra_proc.wait()
+            for proc in (align_proc, sra_prog):
+                proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
