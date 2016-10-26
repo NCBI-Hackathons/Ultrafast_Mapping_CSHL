@@ -200,6 +200,8 @@ class FifoWriter(object):
 # alternate readers for local FASTQ and SAM/BAM/CRAM files and refactoring the
 # Pipelines to accept an arbitrary reader.
 
+# TODO: [JD] Pipe stderr of pipelines to logger
+
 def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
@@ -306,6 +308,17 @@ def salmon_pipeline(args):
                     writer(*read_pair)
             proc.wait()
 
+def sra_to_fastq_pipeline(args):
+    fq1_path = args.output + '.1.fq'
+    fq2_path = args.output + '.2.fq'
+    with open(fq1_path, 'wt') as fq1, open(fq2_path, 'wt') as fq2:
+        for read1, read2 in sra_reader(
+                args.sra_accession,
+                batch_size=args.batch_size,
+                max_reads=args.max_reads):
+            fq1.write("@{}\n{}\n+\n{}".format(*read1))
+            fq2.write("@{}\n{}\n+\n{}".format(*read2))
+
 def mock_pipeline(args):
     for read1, read2 in sra_reader(
             args.sra_accession,
@@ -320,6 +333,7 @@ pipelines = dict(
     hisat=hisat_pipeline,
     kallisto=kallisto_pipeline,
     salmon=salmon_pipeline,
+    fastq=sra_to_fastq_pipeline,
     mock=mock_pipeline)
 
 # Main interface
