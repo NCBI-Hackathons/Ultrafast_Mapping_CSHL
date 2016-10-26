@@ -127,6 +127,7 @@ class BatchWriter(object):
         print('add 2 {}'.format(read2[0]))
         self.add_to_batch(*read2, self.read2_batch, self.index)
         self.index += self.lines_per_row
+        print(self.index)
         if self.index >= self.bufsize:
             print('flush')
             self.flush()
