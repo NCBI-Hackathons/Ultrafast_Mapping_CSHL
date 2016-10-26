@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Aligner-agnostic alignment pipeline that reads from SRA.
 """
-from inspect import inclass
+from inspect import isclass
 import logging
 import shlex
 from subprocess import Popen, PIPE
