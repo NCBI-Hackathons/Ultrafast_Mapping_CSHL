@@ -44,7 +44,7 @@ def main():
         help="String of additional arguments to pass to the aligner")
     parser.add_argument(
         '--batch-size',
-        type=int, default=5000, metavar="N",
+        type=int, default=1000, metavar="N",
         help="Number of reads to process in each batch.")
     args = parser.parse_args()
     run_pipeline(args)
