@@ -338,5 +338,18 @@ def run_pipeline(args):
     Args:
         args: a Namespace object
     """
+    setup_logging(args)
     pipeline = pipelines[args.pipeline]
     pipeline(args)
+
+def setup_logging(args):
+    if not logging.root.handlers:
+        level = getattr(logging, args.log_level)
+        if args.log_file:
+            handler = logging.FileHandler(args.log_file)
+        else:
+            handler = logging.StreamHandler(sys.stderr)
+        handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+        handler.setLevel(level)
+        logging.getLogger().setLevel(level)
+        logging.getLogger().addHandler(handler)

@@ -46,6 +46,14 @@ def main():
         '--batch-size',
         type=int, default=1000, metavar="N",
         help="Number of reads to process in each batch.")
+    parser.add_argument(
+        '--log-level',
+        default="INFO", metavar="LEVEL",
+        help="Logging level")
+    parser.add_argument(
+        '--log-file',
+        default=None, metavar="FILE",
+        help="File for log messages (defaults to stdout)")
     
     # Paths to aligners
     # TODO: move this into a config file
@@ -54,8 +62,7 @@ def main():
     parser.add_argument('--kallisto')
     parser.add_argument('--salmon')
     
-    args = parser.parse_args()
-    run_pipeline(args)
+    run_pipeline(parser.parse_args())
 
 if __name__ == "__main__":
     main()
