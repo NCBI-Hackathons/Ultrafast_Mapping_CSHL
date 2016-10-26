@@ -316,8 +316,8 @@ def sra_to_fastq_pipeline(args):
                 args.sra_accession,
                 batch_size=args.batch_size,
                 max_reads=args.max_reads):
-            fq1.write("@{}\n{}\n+\n{}".format(*read1))
-            fq2.write("@{}\n{}\n+\n{}".format(*read2))
+            fq1.write("@{}\n{}\n+\n{}\n".format(*read1))
+            fq2.write("@{}\n{}\n+\n{}\n".format(*read2))
 
 def mock_pipeline(args):
     for read1, read2 in sra_reader(
