@@ -81,64 +81,64 @@ def hisat_pipeline(args, script_dir):
         with Popen(cmd, stdout=bam, shell=True) as proc:
             proc.wait()
 
-def kallisto_pipeline(args, script_dir):
-    with TempDir(dir=args.temp_dir) as workdir:
-        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        libtype = ''
-        if 'F' in args.libtype:
-            libtype = '--fr-stranded'
-        elif 'R' in args.libtype:
-            libtype = '--rf-stranded'
-        cmd = shlex.split("""
-            {exe} quant -t {threads} -i {index} -o {output}
-                {libtype} {extra} {fifo1} {fifo2}
-        """.format(
-            exe=args.kallisto or "kallisto",
-            threads=args.threads,
-            index=args.index,
-            output=args.output,
-            libtype=libtype,
-            extra=args.aligner_args,
-            fifo1=fifo1,
-            fifo2=fifo2))
-        log.info("Running command: {}".format(' '.join(cmd)))
-        with Popen(cmd) as proc:
-            with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
-                for read_pair in sra_reader(
-                        args.sra_accession,
-                        batch_size=args.batch_size,
-                        max_reads=args.max_reads):
-                    writer(*read_pair)
-            proc.wait()
-
-def salmon_pipeline(args, script_dir):
-    with TempDir(dir=args.temp_dir) as workdir:
-        fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        cmd = shlex.split("""
-            {exe} quant -p {threads} -i {index} -l {libtype}
-                {extra} -1 {fifo1} -2 {fifo2} -o {output}
-        """.format(
-            exe=args.salmon or 'salmon',
-            threads=args.threads,
-            index=args.index,
-            libtype=args.libtype,
-            output=args.output,
-            extra=args.aligner_args,
-            fifo1=fifo1,
-            fifo2=fifo2))
-        log.info("Running command: {}".format(' '.join(cmd)))
-        writer_proc =
-        reader_proc = Popen(cmd)
-        for proc in (writer_proc, reader_proc):
-            proc.wait()
-        
-        
-            with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
-                for read_pair in sra_reader(
-                        args.sra_accession,
-                        batch_size=args.batch_size,
-                        max_reads=args.max_reads):
-                    writer(*read_pair)
+# def kallisto_pipeline(args, script_dir):
+#     with TempDir(dir=args.temp_dir) as workdir:
+#         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+#         libtype = ''
+#         if 'F' in args.libtype:
+#             libtype = '--fr-stranded'
+#         elif 'R' in args.libtype:
+#             libtype = '--rf-stranded'
+#         cmd = shlex.split("""
+#             {exe} quant -t {threads} -i {index} -o {output}
+#                 {libtype} {extra} {fifo1} {fifo2}
+#         """.format(
+#             exe=args.kallisto or "kallisto",
+#             threads=args.threads,
+#             index=args.index,
+#             output=args.output,
+#             libtype=libtype,
+#             extra=args.aligner_args,
+#             fifo1=fifo1,
+#             fifo2=fifo2))
+#         log.info("Running command: {}".format(' '.join(cmd)))
+#         with Popen(cmd) as proc:
+#             with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
+#                 for read_pair in sra_reader(
+#                         args.sra_accession,
+#                         batch_size=args.batch_size,
+#                         max_reads=args.max_reads):
+#                     writer(*read_pair)
+#             proc.wait()
+#
+# def salmon_pipeline(args, script_dir):
+#     with TempDir(dir=args.temp_dir) as workdir:
+#         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
+#         cmd = shlex.split("""
+#             {exe} quant -p {threads} -i {index} -l {libtype}
+#                 {extra} -1 {fifo1} -2 {fifo2} -o {output}
+#         """.format(
+#             exe=args.salmon or 'salmon',
+#             threads=args.threads,
+#             index=args.index,
+#             libtype=args.libtype,
+#             output=args.output,
+#             extra=args.aligner_args,
+#             fifo1=fifo1,
+#             fifo2=fifo2))
+#         log.info("Running command: {}".format(' '.join(cmd)))
+#         writer_proc =
+#         reader_proc = Popen(cmd)
+#         for proc in (writer_proc, reader_proc):
+#             proc.wait()
+#
+#
+#             with FastqWriter(FifoWriter(fifo1, fifo2), args.batch_size) as writer:
+#                 for read_pair in sra_reader(
+#                         args.sra_accession,
+#                         batch_size=args.batch_size,
+#                         max_reads=args.max_reads):
+#                     writer(*read_pair)
             
 
 def sra_to_fastq_pipeline(args, script_dir):
@@ -165,8 +165,8 @@ def head_pipeline(args, script_dir):
 pipelines = dict(
     star=star_pipeline,
     hisat=hisat_pipeline,
-    kallisto=kallisto_pipeline,
-    salmon=salmon_pipeline,
+    #kallisto=kallisto_pipeline,
+    #salmon=salmon_pipeline,
     fastq=sra_to_fastq_pipeline,
     head=head_pipeline)
 
