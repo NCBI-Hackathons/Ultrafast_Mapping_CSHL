@@ -208,7 +208,7 @@ def star_pipeline(args):
                 {exe} --runThreadN {threads} --genomeDir {index}
                     --readFilesIn {fifo1} {fifo2}
                     --outSAMtype BAM SortedByCoordinate
-                    --outStd BAM SortedByCoordinate
+                    --outStd BAM_SortedByCoordinate
                     --outMultimapperOrder Random
                     {extra}
             """.format(
