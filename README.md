@@ -1,8 +1,8 @@
 # UltraFast Expressed Variant Calling
 
-The current tools for identification of expressed variants are either slow or involve several software dependencies which are difficult to install. In addition, they either generate several intermediate files or using significant amounts of RAM which is not high throughput if you are trying to deal with large datasets.
+The current tools for identification of expressed variants are either slow or involve several software dependencies which are difficult to install. In addition, they either generate several intermediate files or use significant amounts of RAM which is not highthroughput if you are trying to analyze large datasets.
 
-Our pipeline identifies expressed variants from public databases such as NCBI SRA as well as user’s own Next Generation Sequence data using one of several RNA aligners and quantification tools.
+Our pipeline identifies expressed variants from public databases such as NCBI SRA as well as user’s own RNA-Seq data using one of several RNA aligners and quantification tools.
 
 ## Installation
 
