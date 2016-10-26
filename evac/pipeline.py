@@ -233,7 +233,7 @@ def star_pipeline(args):
                             max_reads=args.max_reads,
                             progress=progress):
                         writer(*read_pair)
-                proc.wait()
+                proc.communicate()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
