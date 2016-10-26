@@ -6,6 +6,7 @@ from inspect import isclass
 import logging
 import shlex
 from subprocess import Popen, PIPE
+from evac.sra import *
 from evac.utils import *
 
 log = logging.getLogger()
