@@ -52,7 +52,7 @@ print(" ".join(["splitting into chunks of", str(parallelize), "contigs"]))
 with TempDir() as workdir:
     incount=1
     while len(contigs)>0:
-        outfile=workdir.make_path(OUTNAME+str(incount)+".intervals")
+        outfile=workdir.make_path(OUTNAME+str(incount)+".list")
         interval_files.append(outfile)
         with open(outfile, 'w') as i:
           i.write(header)
@@ -63,32 +63,34 @@ with TempDir() as workdir:
                 break
         incount+=1
 
-
+    CMD=[JAVA, "-jar", "-Xmx"+GATK_MEM, GATK_JAR,
+        "-R", REF,
+        "-T", "HaplotypeCaller",
+        "-I", BAM,
+        "--emitRefConfidence", "GVCF",
+        "--dbsnp", DBSNP_VCF,
+        "-L",INTERVALS,
+        "-U","ALLOW_N_CIGAR_READS","-nct", THREADS]
     #Call variants by splitting using those interval files
     gvcf_files=[]
+    cmds=[]
     for f in interval_files:
         gvcf=workdir.make_path(OUTNAME+str(len(gvcf_files))+".g.vcf")
         gvcf_files.append(gvcf)
-        CMD=[JAVA, "-jar", "-Xmx"+GATK_MEM, GATK_JAR,
-             "-R", REF,
-             "-T", "HaplotypeCaller",
-             "-I", BAM,
-             "--emitRefConfidence", "GVCF",
-             "--dbsnp", DBSNP_VCF,
-             "-o", gvcf,
-             "-L",f,
-             "-U","ALLOW_N_CIGAR_READS","-nct", THREADS]
-        import pprint
-        pprint.pprint(CMD)
-        proc=subprocess.Popen(CMD,stdout=subprocess.PIPE,bufsize=1)
-        while True:
-             line = proc.stdout.readline()
-             if line != '':
-                 print (line.rstrip())
-             else:
-                 break
+        hc_cmd=list(CMD)
+        hc_cmd.append("-o")
+        hc_cmd.append(gvcf)
+        hc_cmd.append("-L")
+        hc_cmd.append(f)
+        cmds.append(hc_cmd)
+    def hapcall(cmd_seq):
+        with subprocess.Popen(cmd_seq,stdout=sys.stdout,bufsize=1) as proc:
+            proc.wait()
 
-
+    from multiprocessing import Pool
+    p = Pool(int(THREADS))
+    p.map(hapcall,cmds)
+ 
 #Combine the separate GVCFs together 
 #if necessary
 CMD=[ JAVA, "-jar", "-Xmx"+GATK_MEM, GATK_JAR,
@@ -99,11 +101,5 @@ CMD=[ JAVA, "-jar", "-Xmx"+GATK_MEM, GATK_JAR,
 for f in gvcf_files:
   CMD.append("--variant")
   CMD.append(f)
-#proc=subprocess.Popen(CMD,stdout=subprocess.PIPE)
-#while True:
-#  line = proc.stdout.readline()
-#  if line != '':
-#    print(line.rstrip())
-#  else:   
-#    break
-
+with subprocess.Popen(CMD,stdout=sys.stdout,bufsize=1) as proc:
+    proc.wait()
