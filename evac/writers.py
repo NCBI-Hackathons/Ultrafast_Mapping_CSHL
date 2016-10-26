@@ -3,6 +3,7 @@
 """
 from contextlib import contextmanager
 import copy
+import io
 import os
 from evac.utils import *
 
@@ -106,14 +107,16 @@ class FileWriter(object):
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, fifo1, fifo2, **kwargs):
-        self.fifo1 = open(fifo1, 'wt', **kwargs)
-        self.fifo2 = open(fifo2, 'wt', **kwargs)
+        self.fh1 = open(fifo1, 'wb', 0, **kwargs)
+        self.fh2 = open(fifo2, 'wb', 0, **kwargs)
+        self.fifo1 = io.TextIOWrapper(self.fh1)
+        self.fifo2 = io.TextIOWrapper(self.fh2)
     
     def __call__(self, read1_str, read2_str):
         self.fifo1.write(read1_str)
         self.fifo2.write(read2_str)
     
     def close(self):
-        for fifo in (self.fifo1, self.fifo2):
-            fifo.flush()
-            fifo.close()
+        for fh in (self.fh1, self.fh2):
+            fh.flush()
+            fh.close()
