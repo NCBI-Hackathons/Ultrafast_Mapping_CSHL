@@ -203,7 +203,7 @@ class FifoWriter(object):
 def star_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
-        with open_(args.output_bam, 'wb') as bam:
+        with open_(args.output, 'wb') as bam:
             cmd = shlex.split("""
                 {exe} --runThreadN {threads} --genomeDir {index}
                     --readFilesIn {fifo1} {fifo2}
@@ -235,7 +235,7 @@ def star_pipeline(args):
 # to make sure it's not any slower.
 
 def hisat_pipeline(args):
-    with open_(args.output_bam, 'wb') as bam:
+    with open_(args.output, 'wb') as bam:
         cmd = shlex.split("""
             {exe} -p {threads} -x {index} --sra-acc {accn} {extra}
                 | sambamba view -S -t {threads} -f bam /dev/stdin
