@@ -106,17 +106,14 @@ class FileWriter(object):
         fifo2: Path to the read2 FIFOs
         kwargs: Additional arguments to pass to the ``open`` call.
     """
-    def __init__(self, fifo1, fifo2, **kwargs):
-        self.fh1 = open(fifo1, 'wb', 0, **kwargs)
-        self.fh2 = open(fifo2, 'wb', 0, **kwargs)
-        self.fifo1 = io.TextIOWrapper(self.fh1)
-        self.fifo2 = io.TextIOWrapper(self.fh2)
+    def __init__(self, file1, file2, **kwargs):
+        self.file1 = io.TextIOWrapper(open(file1, 'wb', 0, **kwargs))
+        self.file2 = io.TextIOWrapper(open(file2, 'wb', 0, **kwargs))
     
     def __call__(self, read1_str, read2_str):
-        self.fifo1.write(read1_str)
-        self.fifo2.write(read2_str)
+        self.file1.write(read1_str)
+        self.file2.write(read2_str)
     
     def close(self):
-        for fh in (self.fh1, self.fh2):
-            fh.flush()
-            fh.close()
+        for f in (self.file1, self.file2):
+            f.close()
