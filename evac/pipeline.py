@@ -132,6 +132,9 @@ class BatchWriter(object):
         return self
     
     def __exit__(self, exception_type, exception_value, traceback):
+        print(exception_type)
+        print(exception_value)
+        print(traceback)
         if self.index > 0:
             self.flush()
         self.close()
@@ -234,7 +237,9 @@ def star_pipeline(args):
                             max_reads=args.max_reads,
                             progress=progress):
                         writer(*read_pair)
-                proc.communicate()
+                if progress:
+                    print("\nWaiting for STAR to finish...")
+                proc.wait()
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
