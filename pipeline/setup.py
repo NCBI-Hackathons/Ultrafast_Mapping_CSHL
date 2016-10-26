@@ -7,7 +7,7 @@ if sys.version_info < (3, 3):
     sys.exit(1)
 
 setup(
-    name='evc-pipeline',
+    name='pipeline',
     version='0.1',
     description='Our UltraFast (tm) pipeline for calling expressed variants',
     url='https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL',
