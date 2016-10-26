@@ -102,6 +102,7 @@ class BatchWriter(object):
         self.writer = writer
         self.batch_size = batch_size
         self.lines_per_row = lines_per_row
+        self.bufsize = batch_size * lines_per_row
         self.linesep = linesep
         self.read1_batch = self._create_batch_list()
         self.read2_batch = copy.copy(self.read1_batch)
@@ -111,7 +112,7 @@ class BatchWriter(object):
         """Create the list to use for buffering reads. Can be overridden, but
         must return a list that is of size ``batch_size * lines_per_row``.
         """
-        return [None] * (self.batch_size * self.lines_per_row)
+        return [None] * self.bufsize
     
     def __call__(self, read1, read2):
         """Add a read pair to the buffer. Writes the batch to the underlying
@@ -124,7 +125,7 @@ class BatchWriter(object):
         self.add_to_batch(*read1, self.read1_batch, self.index)
         self.add_to_batch(*read2, self.read2_batch, self.index)
         self.index += self.lines_per_row
-        if self.index >= self.batch_size:
+        if self.index >= self.bufsize:
             self.flush()
     
     def __enter__(self):
@@ -142,7 +143,7 @@ class BatchWriter(object):
             last: Is this the last call to flush? If not, a trailing linesep
                 is written.
         """
-        if self.index < self.batch_size:
+        if self.index < self.bufsize:
             self.writer(
                 self.linesep.join(self.read1_batch[0:self.index]),
                 self.linesep.join(self.read2_batch[0:self.index]))
