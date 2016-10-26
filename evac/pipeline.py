@@ -201,13 +201,14 @@ def star_pipeline(args):
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         with open_(args.output_bam, 'wb') as bam:
             cmd = normalize_whitespace("""
-                STAR --runThreadN {threads} --genomeDir {index}
+                {exe} --runThreadN {threads} --genomeDir {index}
                     --readFilesIn {fifo1} {fifo2}
                     --outSAMtype BAM SortedByCoordinate
                     --outStd BAM SortedByCoordinate
                     --outMultimapperOrder Random
                     {extra}
             """.format(
+                exe=args.star or "STAR",
                 threads=args.threads,
                 index=args.index,
                 fifo1=fifo1,
@@ -231,10 +232,11 @@ def star_pipeline(args):
 def hisat_pipeline(args):
     with open_(args.output_bam, 'wb') as bam:
         cmd = normalize_whitespace("""
-            hisat2 -p {threads} -x {index} --sra-acc {accn} {extra}
+            {exe} -p {threads} -x {index} --sra-acc {accn} {extra}
                 | sambamba view -S -t {threads} -f bam /dev/stdin
                 | sambamba sort -t {threads} /dev/stdin
         """.format(
+            exe=args.hisat2 or "hisat2",
             accn=args.sra_accession,
             threads=args.threads,
             index=args.index,
@@ -252,9 +254,10 @@ def kallisto_pipeline(args):
         elif 'R' in args.libtype:
             libtype = '--rf-stranded'
         cmd = normalize_whitespace("""
-            kallisto quant -t {threads} -i {index} -o {output}
+            {exe} quant -t {threads} -i {index} -o {output}
                 {libtype} {extra} {fifo1} {fifo2}
         """.format(
+            exe=args.kallisto or "kallisto",
             threads=args.threads,
             index=args.index,
             output=args.output,
@@ -275,9 +278,10 @@ def salmon_pipeline(args):
     with TempDir() as workdir:
         fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
         cmd = normalize_whitespace("""
-            salmon quant -p {threads} -i {index} -l {libtype}
+            {exe} quant -p {threads} -i {index} -l {libtype}
                 {extra} -1 {fifo1} -2 {fifo2} -o {output}
         """.format(
+            exe=args.salmon or 'salmon',
             threads=args.threads,
             index=args.index,
             libtype=args.libtype,

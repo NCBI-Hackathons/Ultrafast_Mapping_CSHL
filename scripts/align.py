@@ -46,6 +46,14 @@ def main():
         '--batch-size',
         type=int, default=1000, metavar="N",
         help="Number of reads to process in each batch.")
+    
+    # Paths to aligners
+    # TODO: move this into a config file
+    parser.add_argument('--star')
+    parser.add_argument('--hisat2')
+    parser.add_argument('--kallisto')
+    parser.add_argument('--salmon')
+    
     args = parser.parse_args()
     run_pipeline(args)
 
