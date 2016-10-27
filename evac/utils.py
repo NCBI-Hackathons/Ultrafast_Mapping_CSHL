@@ -19,6 +19,9 @@ def open_(path, mode, **kwargs):
             yield f
 
 class TempDir(object):
+    """Context manager that creates a temporary directory and cleans it up
+    upon exit.
+    """
     def __init__(self, **kwargs):
         self.root = os.path.abspath(tempfile.mkdtemp(**kwargs))
     
@@ -45,6 +48,8 @@ class TempDir(object):
         return fifo_paths
 
 def wrap_progress(iterable, **kwargs):
+    """Wrap an iterable in a tqdm progress bar, if the library is installed.
+    """
     try:
         import tqdm
         return tqdm.tqdm(iterable, **kwargs)

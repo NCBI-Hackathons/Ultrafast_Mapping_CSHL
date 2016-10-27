@@ -10,7 +10,7 @@ def is_fifo(path):
 
 def stream_sra_reads(args):
     if is_fifo(args.fastq1) and is_fifo(args.fastq2):
-        string_writer = FifoWriter(args.fastq1, args.fastq2)
+        string_writer = FifoWriter(args.fastq1, args.fastq2, pv=args.pv)
     else:
         string_writer = FileWriter(args.fastq1, args.fastq2)
     with FastqWriter(string_writer, args.batch_size) as writer:
@@ -39,6 +39,7 @@ def main():
         '--progress',
         action='store_true', default=False,
         help="Show a progress bar.")
+    parser.add_argument('--pv', default='pv')
     parser.add_argument('fastq1', help="Output file for fastq1")
     parser.add_argument('fastq2', help="Output file for fastq2")
     args = parser.parse_args()

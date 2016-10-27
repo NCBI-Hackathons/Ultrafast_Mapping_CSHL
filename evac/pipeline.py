@@ -13,6 +13,9 @@ log = logging.getLogger()
 
 # Pipelines
 
+# TODO: [JD] These are just default pipelines. Version 2 will enable pipelines
+# to be built from simple descriptions in json/yaml.
+
 # TODO: [JD] These have lots of redundant code right now. I will be adding
 # alternate readers for local FASTQ and SAM/BAM/CRAM files and refactoring the
 # Pipelines to accept an arbitrary reader.
@@ -136,6 +139,8 @@ class SalmonPipeline(SraPipeline):
         yield Popen(cmd)
 
 def sra_to_fastq_pipeline(args):
+    """Just dump reads from SRA to fastq files.
+    """
     fq1_path = args.output + '.1.fq'
     fq2_path = args.output + '.2.fq'
     with open(fq1_path, 'wt') as fq1, open(fq2_path, 'wt') as fq2:
@@ -147,6 +152,8 @@ def sra_to_fastq_pipeline(args):
             fq2.write("@{}\n{}\n+\n{}\n".format(*read2))
 
 def head_pipeline(args):
+    """Just print the first ``max_reads`` reads.
+    """
     for read1, read2 in sra_reader(
             args.sra_accession,
             batch_size=args.batch_size,

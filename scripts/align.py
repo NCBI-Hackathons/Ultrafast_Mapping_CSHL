@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Align/quantify reads from an SRA accession using one of several popular tools.
+"""
 from argparse import ArgumentParser
 import os
 from evac.pipeline import run_pipeline, list_pipelines
