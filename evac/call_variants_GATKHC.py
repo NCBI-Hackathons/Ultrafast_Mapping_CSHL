@@ -1,26 +1,26 @@
-#!/bin/env python
+#!/bin/env python3
 import sys
 from evac.utils import TempDir
-
-JAVA=sys.argv[1]
-GATK_JAR=sys.argv[2]
-GATK_MEM=sys.argv[3]
-REF=sys.argv[4]
-BAM=sys.argv[5]
-DBSNP_VCF=sys.argv[6]
-INTERVALS=sys.argv[7]
-OUTDIR=sys.argv[8]
-GOLD_INDELS=sys.argv[9]
-THREADS=sys.argv[10]
-samtools=sys.argv[11]
-
 import os.path
 import subprocess
 import re
 
 
-OUTNAME=os.path.splitext(BAM)[0]
-interval_files=[]
+def gatk(args): 
+    JAVA=args.java          #sys.argv[1]
+    GATK_JAR=args.gatk      #sys.argv[2]
+    GATK_MEM=args.mem       #sys.argv[3]
+    REF=args.index          #sys.argv[4]
+    BAM=args.BAM            #sys.argv[5]
+    DBSNP_VCF=args.dbsnp    #sys.argv[6]
+    INTERVALS=args.regions  #sys.argv[7]
+    OUTDIR=args.out         #sys.argv[8]
+    GOLD_INDELS=args.indels #sys.argv[9]
+    THREADS=args.threads    #sys.argv[10]
+    samtools=args.samtools  #sys.argv[11]
+
+    OUTNAME=os.path.splitext(BAM)[0]
+    interval_files=[]
 
 #get the header of the bam file
 print([samtools, "view", "-H", BAM])
