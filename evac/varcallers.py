@@ -13,6 +13,24 @@ def proccall(cmd_seq):
         with subprocess.Popen(cmd_seq,stdout=sys.stdout,bufsize=1) as proc:
             proc.wait()
 
+def mpileup_pipeline(args):
+    REF=args.index
+    BAM=args.bam
+    OUTDIR=args.output
+    samtools=args.samtools
+    caller_args=args.caller_args
+    regions=args.regions
+
+    CMD=[samtools, "mpileup", 
+        "-f", REF,
+        "-l", regions,
+        "-v", "-u", "-t DP,AD", caller_args, "-"]
+    log.info("Running command: {}".format(' '.join(CMD)))
+    with subprocess.Popen(CMD,stdin=BAM, stdout=OUTDIR) as proc:
+        proc.wait()
+
+
+
 def gatk_pipeline(args, script_dir):
     JAVA=args.java          #sys.argv[1]
     GATK_JAR=args.gatk      #sys.argv[2]
@@ -79,7 +97,8 @@ def gatk_pipeline(args, script_dir):
         "--emitRefConfidence", "GVCF",
         "--dbsnp", DBSNP_VCF,
         "-L",INTERVALS,
-        "-U","ALLOW_N_CIGAR_READS","-nct", THREADS]
+        "-U","ALLOW_N_CIGAR_READS","-nct", THREADS,
+        caller_args]
     #Call variants by splitting using those interval files
     gvcf_files=[]
     cmds=[]
@@ -122,6 +141,7 @@ def gatk_pipeline(args, script_dir):
 
 callers = dict(
     gatk=gatk_pipeline
+    mpileup=mpileup_pipeline
     )
 
 def list_callers():
