@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
+import os
+import stat
 from evac.sra import *
 from evac.writers import *
 
+def is_fifo(path):
+    return os.path.exists(path) and stat.S_ISFIFO(os.stat(path).st_mode)
+
 def stream_sra_reads(args):
-    writer = FastqWriter(FileWriter(args.fastq1, args.fastq2), args.batch_size)
-    with writer:
+    if is_fifo(args.fastq1) and is_fifo(args.fastq2):
+        string_writer = FifoWriter(args.fastq1, args.fastq2)
+    else:
+        string_writer = FileWriter(args.fastq1, args.fastq2)
+    with FastqWriter(string_writer, args.batch_size) as writer:
         for read_pair in sra_reader(
                 args.sra_accession,
                 batch_size=args.batch_size,

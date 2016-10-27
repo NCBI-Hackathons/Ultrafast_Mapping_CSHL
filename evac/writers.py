@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import copy
 import io
 import os
+from subprocess import Popen, PIPE
 from evac.utils import *
 
 class BatchWriter(object):
@@ -98,17 +99,41 @@ class FastqWriter(BatchWriter):
         batch[index+1] = sequence
         batch[index+3] = qualities
 
+class FifoWriter(object):
+    """String writer that opens and writes to a pair of FIFOs in a non-blocking
+    way. Each FIFO is written to by opening a subprocess in which stdin is
+    piped through pv (with -B option to set max buffer size) to a FIFO.
+
+    Args:
+        fifo1: Path to the read1 FIFO
+        fifo2: Path to the read2 FIFO
+    """
+    def __init__(self, fifo1, fifo2, **kwargs):
+        self.p1 = Popen('pv -B {} > {}'.format('1M', fifo1), shell=True,
+                        universal_newlines=True)
+        self.p2 = Popen('pv -B {} > {}'.format('1M', fifo2), shell=True,
+                        universal_newlines=True)
+    
+    def __call__(self, read1_str, read2_str):
+        self.p1.stdin.write(read1_str)
+        self.p2.stdin.write(read2_str)
+    
+    def close(self):
+        for f in (self.p1, self.p2):
+            f.stdin.close()
+            f.terminate()
+
 class FileWriter(object):
-    """String writer that opens and writes to a pair of FIFOs.
+    """String writer that opens and writes to a pair of files.
     
     Args:
-        fifo1: Path to the read1 FIFOs
-        fifo2: Path to the read2 FIFOs
+        file1: Path to the read1 file
+        file2: Path to the read2 file
         kwargs: Additional arguments to pass to the ``open`` call.
     """
     def __init__(self, file1, file2, **kwargs):
-        self.file1 = io.TextIOWrapper(open(file1, 'wb', 0, **kwargs))
-        self.file2 = io.TextIOWrapper(open(file2, 'wb', 0, **kwargs))
+        self.file1 = open(file1, 'wt', **kwargs)
+        self.file2 = open(file2, 'wt', **kwargs)
     
     def __call__(self, read1_str, read2_str):
         self.file1.write(read1_str)
