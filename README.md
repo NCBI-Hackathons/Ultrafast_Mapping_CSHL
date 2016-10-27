@@ -14,7 +14,6 @@ Older or newer versions may be used but may not be fully compatible.
 
 Pull from SRA:
 
-* [SRA Toolkit 2.8.0+](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software): set [use vdb-config -i to DISABLE local file caching](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=std)
 * [NGS Software Development Kit 1.3.0+](https://github.com/ncbi/ngs)
 * [NCBI VDB Software Development Kit 2.8.0+](https://github.com/ncbi/ncbi-vdb)
 * [pv](https://linux.die.net/man/1/pv) -- this should already be available on OSX and most unix systems

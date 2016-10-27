@@ -107,14 +107,16 @@ class FifoWriter(object):
     Args:
         fifo1: Path to the read1 FIFO
         fifo2: Path to the read2 FIFO
+        buffer: Command line to program that accepts and buffers between stdin
+            and stdout
         kwargs: Additional arguments to pass to Popen
     """
-    def __init__(self, fifo1, fifo2, **kwargs):
+    def __init__(self, fifo1, fifo2, buffer, **kwargs):
         self.p1 = Popen(
-            '{pv} -q -B {size} > {fifo}'.format(pv=args.pv, size='1M', fifo=fifo1),
+            '{buffer} > {fifo}'.format(buffer=buffer, fifo=fifo1),
             stdin=PIPE, shell=True, universal_newlines=True, **kwargs)
         self.p2 = Popen(
-            '{pv} -q -B {size} > {fifo}'.format(pv=args.pv, size='1M', fifo=fifo2),
+            '{buffer} > {fifo}'.format(buffer=buffer, fifo=fifo2),
             stdin=PIPE, shell=True, universal_newlines=True, **kwargs)
     
     def __call__(self, read1_str, read2_str):
