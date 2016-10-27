@@ -109,10 +109,10 @@ class FifoWriter(object):
         fifo2: Path to the read2 FIFO
     """
     def __init__(self, fifo1, fifo2, **kwargs):
-        self.p1 = Popen('pv -B {} > {}'.format('1M', fifo1), shell=True,
-                        universal_newlines=True)
-        self.p2 = Popen('pv -B {} > {}'.format('1M', fifo2), shell=True,
-                        universal_newlines=True)
+        self.p1 = Popen('pv -B {} > {}'.format('1M', fifo1), stdin=PIPE,
+                        shell=True, universal_newlines=True)
+        self.p2 = Popen('pv -B {} > {}'.format('1M', fifo2), stdin=PIPE,
+                        shell=True, universal_newlines=True)
     
     def __call__(self, read1_str, read2_str):
         self.p1.stdin.write(read1_str)
