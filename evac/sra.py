@@ -25,7 +25,7 @@ def sra_reader(accn, batcher):
         run_name = run.getName()
         read_count = run.getReadCount()
         for batch, start, size in batcher(read_count):
-            with run.getReadRange(start, size, Read.all) as read:
+            with run.getReadRange(start + 1, size, Read.all) as read:
                 for read_idx in range(size):
                     read.nextRead()
                     yield sra_read(read)
@@ -49,7 +49,7 @@ def sra_read(read, paired=None, expected_fragments=None):
             raise Exception("Read {} is not paired".format(read_name))
         return (
             read_name,
-            read_pair.getFragmentBases(),
-            read_pair.getFragmentQualities())
+            read.getFragmentBases(),
+            read.getFragmentQualities())
     
     return tuple(next_frag() for i in range(num_fragments))
