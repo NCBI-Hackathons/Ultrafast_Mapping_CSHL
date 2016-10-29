@@ -20,7 +20,8 @@ def stream_sra_reads(args):
     if is_fifo(args.fastq1) and is_fifo(args.fastq2):
         string_writer = FifoWriter(args.fastq1, args.fastq2, args.buffer)
     else:
-        string_writer = FileWriter(args.fastq1, args.fastq2)
+        string_writer = FileWriter(
+            args.fastq1, args.fastq2, mode=args.output_mode + 't')
     
     batcher = Batcher(
         item_start=start,
@@ -52,6 +53,11 @@ def main():
         '-l', '--last-read',
         type=int, default=None, metavar="N",
         help="The last read to stream")
+    parser.add_argument(
+        '-o', '--output-mode',
+        choices=('w','a'), default='w',
+        help="Open mode for output files; w=write (overwrite existing file), "
+            "a=append.")
     parser.add_argument(
         '-s', '--batch-size',
         type=int, default=1000, metavar="N",

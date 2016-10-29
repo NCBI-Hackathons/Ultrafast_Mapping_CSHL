@@ -40,7 +40,21 @@ pip install git+https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL.git
 
 ### Usage
 
-Output the first 10 reads of SRR1616919 to standard output:
+There are two main python scripts: stream_sra.py and align.py. The first streams a set of reads for a given accession to a file (or stdout by default). The second uses the first and pipes the reads to the aligner of your choice (via a FIFO, or pair of FIFOs for paired-end reads).
+
+Save the first 10 reads of SRR1616919 to a pair of fastq files:
+
+```
+stream_sra.py -a SRR1616919 -M 10 head.1.fq head.2.fq
+```
+
+Append the next 10 reads to the same files:
+
+```
+stream_sra.py -a SRR1616919 -f 11 -l 20 -o a head.1.fq head.2.fq
+```
+
+Print the first 10 reads of SRR1616919 to stdout:
 
 ```
 align.py -a SRR1616919 -M 10 -p head
