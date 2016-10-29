@@ -24,8 +24,8 @@ def mpileup_pipeline(args):
         "-l", regions,
         "-v", "-u", "-t DP,AD", caller_args, "-"]
     log.info("Running command: {}".format(' '.join(CMD)))
-    with open_(args.bam, 'r') as BAM:
-        with open_(args.output, 'w') as OUT:
+    with open_(args.bam, 'rb') as BAM:
+        with open_(args.output, 'wb') as OUT:
             with subprocess.Popen(CMD,stdin=BAM, stdout=OUT) as proc:
                 proc.wait()
 
