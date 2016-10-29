@@ -6,7 +6,7 @@ Our pipeline identifies expressed variants from public databases such as NCBI SR
 
 Presentation: [Hackathon end presentation](https://docs.google.com/presentation/d/1dUL5vSF2vqZljXa7FQJ6D-1eldAw0Gb-YeKrk9Gun8Q/pub?start=false&loop=false&delayms=3000)
 
-## Alignment from SRA
+## Alignment/quantification from SRA
 
 ### Dependencies
 
@@ -16,19 +16,21 @@ Pull from SRA:
 
 * [NGS Software Development Kit 1.3.0+](https://github.com/ncbi/ngs)
 * [NCBI VDB Software Development Kit 2.8.0+](https://github.com/ncbi/ncbi-vdb)
-* [pv](https://linux.die.net/man/1/pv) -- this should already be available on OSX and most unix systems
+* [pv](https://linux.die.net/man/1/pv) (or any pipe-able buffering tool)
 
 RNA Aligners
 
 * [HISAT2 2.0.4+](http://ccb.jhu.edu/software/hisat2/index.shtml)
 * [STAR 2.5.2b](https://github.com/alexdobin/STAR)
-* [Sambamba v0.6.5+](http://lomereiter.github.io/sambamba/)
 
 Transcript quantification
 
 * [kallisto v0.43.0+](https://pachterlab.github.io/kallisto/)
 * [SALMON 0.7.2+](https://combine-lab.github.io/salmon/)
-* [Subread (for featureCounts) 1.5.1+](http://bioinf.wehi.edu.au/featureCounts/)
+
+Other tools
+
+* [Sambamba v0.6.5+](http://lomereiter.github.io/sambamba/)
 
 ### Installation
 
@@ -79,7 +81,12 @@ Variant callers
 * [The Genome Analysis Toolkit (GATK) 3.6+](https://software.broadinstitute.org/gatk/)
 * [Bedops](https://bedops.readthedocs.io/en/latest/content/reference/file-management/conversion/vcf2bed.html) - to convert VCFs into BED
 
+Trascript counting
+
+* [Subread (for featureCounts) 1.5.1+](http://bioinf.wehi.edu.au/featureCounts/)
+
 Reference data : note that the chromosome/contig identifiers need to match for all of these
+
 * [GRCh38 human genome reference fasta]()
   * Create reference indexes for almost all of the above tools
 * [ClinVar vcf]()
