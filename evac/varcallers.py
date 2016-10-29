@@ -15,8 +15,6 @@ def proccall(cmd_seq):
 
 def mpileup_pipeline(args):
     REF=args.index
-    BAM=args.bam
-    OUTDIR=args.output
     samtools=args.samtools
     caller_args=args.caller_args
     regions=args.regions
@@ -26,8 +24,10 @@ def mpileup_pipeline(args):
         "-l", regions,
         "-v", "-u", "-t DP,AD", caller_args, "-"]
     log.info("Running command: {}".format(' '.join(CMD)))
-    with subprocess.Popen(CMD,stdin=BAM, stdout=OUTDIR) as proc:
-        proc.wait()
+    with open_(args.bam, 'rb') as BAM:
+        with open_(args.output, 'wb') as OUT:
+            with subprocess.Popen(CMD,stdin=BAM, stdout=OUT) as proc:
+                proc.wait()
 
 
 
@@ -81,7 +81,7 @@ def gatk_pipeline(args, script_dir):
         while len(contigs)>0:
             outfile=workdir.make_path(OUTNAME+str(incount)+".list")
             interval_files.append(outfile)
-            with open(outfile, 'w') as i:
+            with open_(outfile, 'w') as i:
                 i.write(header)
                 for x in range(0,parallelize):
                     line=contigs.pop()
