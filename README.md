@@ -43,7 +43,7 @@ pip install git+https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL.git
 Output the first 10 reads of SRR1616919 to standard output:
 
 ```
-align.py -a SRR1616919 -M 10 -p mock
+align.py -a SRR1616919 -M 10 -p head
 ```
 
 Align all reads of SRR1616919 using STAR and generate a sorted BAM using 16 threads...:
