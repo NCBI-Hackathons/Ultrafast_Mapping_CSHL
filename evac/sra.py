@@ -40,6 +40,7 @@ def sra_read(read, paired=None, expected_fragments=None):
     if expected_fragments and num_fragments != expected_fragments:
         raise Exception("Read {} has fewer than {} fragments".format(
             read_name, expected_fragments))
+    # TODO: extract other useful information such as read group
     #read_group = read.getReadGroup()
     
     def next_frag():

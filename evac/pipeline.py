@@ -14,13 +14,23 @@ log = logging.getLogger()
 # Pipelines
 
 # TODO: [JD] These are just default pipelines. Version 2 will enable pipelines
-# to be built from simple descriptions in json/yaml.
+# to be built from CWL descriptions using toil.
 
 # TODO: [JD] These have lots of redundant code right now. I will be adding
 # alternate readers for local FASTQ and SAM/BAM/CRAM files and refactoring the
-# Pipelines to accept an arbitrary reader.
+# pipelines to accept an arbitrary reader.
 
 # TODO: [JD] Pipe stderr of pipelines to logger
+
+# TODO: [JD] Incorporate compressive mapping code from CORA
+# https://github.com/jdidion/cora/blob/master/manual.txt
+
+# TODO: [JD] Incorporate qtip MAPQ correction?
+# https://github.com/BenLangmead/qtip
+
+# TODO: [JD] Incoprorate Popen hacks from
+# https://github.com/brentp/toolshed/blob/master/toolshed/files.py
+# https://github.com/wal-e/wal-e/blob/master/wal_e/pipebuf.py
 
 def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
     script = os.path.join(script_dir, "stream_sra.py")
@@ -154,11 +164,11 @@ def sra_to_fastq_pipeline(args):
 def head_pipeline(args):
     """Just print the first ``max_reads`` reads.
     """
-    for read1, read2 in sra_reader(
-            args.sra_accession,
-            batch_size=args.batch_size,
-            max_reads=args.max_reads or 10,
-            progress=False):
+    batcher = Batcher(
+        item_limit=args.max_reads or 10,
+        batch_size=args.batch_size,
+        progress=False)
+    for read1, read2 in sra_reader(args.sra_accession, batcher):
         print(read1[0] + ':')
         print('  ' + '\t'.join(read1[1:]))
         print('  ' + '\t'.join(read2[1:]))
