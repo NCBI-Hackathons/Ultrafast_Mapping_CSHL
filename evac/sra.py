@@ -1,41 +1,14 @@
 # -*- coding: utf-8 -*-
 """Reading from SRA.
 """
+import math
 import os
 from evac.utils import *
 from ngs import NGS
 from ngs.Read import Read
 from ngs.ErrorMsg import ErrorMsg
 
-def sra_read_pair(read_pair):
-    """Creates a pair of tuples (name, sequence, qualities) from the current
-    read of an ngs.ReadIterator.
-    """
-    read_name = read_pair.getReadName()
-    if read_pair.getNumFragments() != 2:
-        raise Exception("Read {} is not paired".format(read_name))
-        
-    read_group = read_pair.getReadGroup()
-    
-    read_pair.nextFragment()
-    if not read_pair.isPaired():
-        raise Exception("Read {} is not paired".format(read_name))
-    read1 = (
-        read_name,
-        read_pair.getFragmentBases(),
-        read_pair.getFragmentQualities())
-    
-    read_pair.nextFragment()
-    if not read_pair.isPaired():
-        raise Exception("Read {} is not paired".format(read_name))
-    read2 = (
-        read_name,
-        read_pair.getFragmentBases(),
-        read_pair.getFragmentQualities())
-    
-    return (read1, read2)
-
-def sra_reader(accn, batch_size=1000, max_reads=None, progress=True):
+def sra_reader(accn, batcher):
     """Iterates through a read collection for a given accession number using
     the ngs-lib python bindings.
     
@@ -48,25 +21,34 @@ def sra_reader(accn, batch_size=1000, max_reads=None, progress=True):
     Yields:
         Each pair of reads (see ``sra_read_pair``)
     """
-    def run_iter(run, max_reads):
-        run_name = run.getName()
-        for batch_num, first_read in enumerate(
-                range(1, max_reads, batch_size)):
-            cur_batch_size = min(
-                batch_size,
-                max_reads - first_read + 1)
-            with run.getReadRange(
-                    first_read, cur_batch_size, Read.all) as read:
-                for read_idx in range(cur_batch_size):
-                    read.nextRead()
-                    yield sra_read_pair(read)
-    
     with NGS.openReadCollection(accn) as run:
+        run_name = run.getName()
         read_count = run.getReadCount()
-        if max_reads:
-            max_reads = min(read_count, max_reads)
-        else:
-            max_reads = read_count
-        itr = run_iter(run, max_reads)
-        for read_pair in wrap_progress(itr, disable=not progress, total=max_reads):
-            yield read_pair
+        for batch, start, size in batcher(read_count):
+            with run.getReadRange(start, size, Read.all) as read:
+                for read_idx in range(size):
+                    read.nextRead()
+                    yield sra_read(read)
+
+def sra_read(read, paired=None, expected_fragments=None):
+    """Creates sequence of (name, sequence, qualities) tuples from the current
+    read of an ngs.ReadIterator. Typically the sequence has one or two tuples
+    for single- and paired-end reads, respectively.
+    """
+    read_name = read.getReadName()
+    num_fragments = read.getNumFragments()
+    if expected_fragments and num_fragments != expected_fragments:
+        raise Exception("Read {} has fewer than {} fragments".format(
+            read_name, expected_fragments))
+    #read_group = read.getReadGroup()
+    
+    def next_frag():
+        read.nextFragment()
+        if paired and not read.isPaired():
+            raise Exception("Read {} is not paired".format(read_name))
+        return (
+            read_name,
+            read_pair.getFragmentBases(),
+            read_pair.getFragmentQualities())
+    
+    return tuple(next_frag() for i in range(num_fragments))
