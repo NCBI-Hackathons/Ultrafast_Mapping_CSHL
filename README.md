@@ -114,8 +114,8 @@ varcallers.py 	--caller mpileup \
 		--out OUTFILE.vcf \
                 --index hg38.fa \
 		--regions clinvar.chr.bed 
-		```
-
+	
+```
 ...or with GATK:
 
 ```
