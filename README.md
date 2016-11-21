@@ -61,7 +61,7 @@ pip install git+https://github.com/NCBI-Hackathons/Ultrafast_Mapping_CSHL.git
 
 ### Usage
 
-There are two main python scripts: stream_sra.py and align.py. The first streams a set of reads for a given accession to a file (or stdout by default). The second uses the first and pipes the reads to the aligner of your choice (via a FIFO, or pair of FIFOs for paired-end reads).
+There are several main python scripts: stream_sra.py, align.py and call_variants. The first streams a set of reads for a given accession to a file (or stdout by default). The second uses the first and pipes the reads to the aligner of your choice (via a FIFO, or pair of FIFOs for paired-end reads). The last accepts a BAM from an aligner and will call variants using one of several methods.
 
 Save the first 10 reads of SRR1616919 to a pair of fastq files:
 
