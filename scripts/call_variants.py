@@ -1,60 +1,73 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 import os
-from evac.pipeline import run_pipeline, list_pipelines
+from evac.varcallers import run_caller, list_callers
 
 # Main
 
 def main(script_dir):
     parser = ArgumentParser()
     parser.add_argument(
-        '-a', '--sra-accession',
-        default=None, metavar="SRRXXXXXXX",
-        help="Accession number of SRA run to align")
-    parser.add_argument(
-        '-l', '--library-type',
-        default="SF", metavar="LIBTYPE",
-        help="Library type, as specified by Salmon ( "
-            "http://salmon.readthedocs.io/en/latest/salmon.html). "
-            "Currently, this argument is only used for Kallisto and Salmon.")
-    parser.add_argument(
-        '-M', '--max-reads',
-        type=int, default=None, metavar="N",
-        help="Maximum reads to align")
+        '-b', '--bam',
+        default='-', metavar="PATH",
+        help="Location of the BAM file")
     parser.add_argument(
         '-o', '--output',
         default="-", metavar="PATH",
-        help="Path to output. For 'star' and 'histat' pipelines, this must be "
-            "a file (including '-' for stdout). For 'kallisto', this must be a "
-            "directory.")
+        help="Directory to output.")
     parser.add_argument(
-        '-p', '--pipeline',
-        choices=list_pipelines(), default='star',
-        help="The alignment pipeline to use")
+        '-c', '--caller',
+        choices=list_callers(), default='mpileup',
+        help="The caller pipeline to use")
     parser.add_argument(
         '-r', '--index',
         default=None, metavar="PATH",
-        help="Genome idex to use for alignment")
+        help="Genome index to use for alignment")
     parser.add_argument(
         '-t', '--threads',
+        type=int, default=10, metavar="N",
+        help="Number of threads to use for 'gatk'")
+    parser.add_argument(
+        '-m', '--mem',
         type=int, default=1, metavar="N",
-        help="Number of threads to use for alignment")
+        help="Memory in GB to use for 'gatk'")
     parser.add_argument(
-        '--aligner-args',
+        '-L', '--regions',
+        default=None, metavar="PATH",
+        help="A BED file to limit the calling space")
+    parser.add_argument(
+        '--dbsnp',
+        default=None, metavar="PATH",
+        help="Path to the dbsnp VCF file for 'gatk'")
+    parser.add_argument(
+        '--indels',
+        default=None, metavar="PATH",
+        help="Path to the golden indels VCF file for 'gatk'")
+    parser.add_argument(
+        '--indels',
+        default=None, metavar="PATH",
+        help="Path to the golden indels for 'gatk'")
+    parser.add_argument(
+        '--java',
+        default="java", metavar="PATH",
+        help="Absolute path to the 'java' JRE executable ")
+    parser.add_argument(
+        '--gatkpath',
+        default="GenomeAnalysisTK.jar", metavar="PATH",
+        help="Absolute path to the GATK jar")
+    parser.add_argument(
+        '--samtools',
+        default="samtools", metavar="PATH",
+        help="Absolute path to the samtools executable"
+        )
+    parser.add_argument(
+        '--caller-args',
         default="", metavar="ARGS",
-        help="String of additional arguments to pass to the aligner")
-    parser.add_argument(
-        '--batch-size',
-        type=int, default=1000, metavar="N",
-        help="Number of reads to process in each batch.")
+        help="String of additional arguments to pass to the caller")
     parser.add_argument(
         '--temp-dir',
         default=None, metavar="DIR",
         help="The root directory to use for temporary files/directories")
-    parser.add_argument(
-        '--no-progress',
-        action='store_false', default=True, dest='progress',
-        help="No progress bar.")
     parser.add_argument(
         '--log-file',
         default=None, metavar="FILE",
@@ -70,12 +83,10 @@ def main(script_dir):
         help="Only write error messages (equivalent to "
             "--log-level ERROR --no-progress)")
     
-    # Paths to aligners
+    # Paths to callers
     # TODO: move this into a config file
-    parser.add_argument('--star')
-    parser.add_argument('--hisat2')
-    parser.add_argument('--kallisto')
-    parser.add_argument('--salmon')
+    parser.add_argument('--gatk')
+    parser.add_argument('--mpileup')
     
     run_pipeline(parser.parse_args(), script_dir)
 

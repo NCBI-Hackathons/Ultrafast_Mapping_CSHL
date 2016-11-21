@@ -28,6 +28,27 @@ Transcript quantification
 * [kallisto v0.43.0+](https://pachterlab.github.io/kallisto/)
 * [SALMON 0.7.2+](https://combine-lab.github.io/salmon/)
 
+Transcript counting
+
+* [Subread (for featureCounts) 1.5.1+](http://bioinf.wehi.edu.au/featureCounts/)
+
+Variant callers
+
+* [Samtools 1.3.1+](http://www.htslib.org/)
+* [The Genome Analysis Toolkit (GATK)
+* 3.6+](https://software.broadinstitute.org/gatk/)
+* [Bedops](https://bedops.readthedocs.io/en/latest/content/reference/file-management/conversion/vcf2bed.html)
+* - to convert VCFs into BED
+
+Reference data : note that the chromosome/contig identifiers need to match for
+all of these
+
+* [GRCh38 human genome reference fasta]()
+  * Create reference indexes for almost all of the above tools
+* [ClinVar vcf]()
+* [GTF file with exome regions]()
+
+
 Other tools
 
 * [Sambamba v0.6.5+](http://lomereiter.github.io/sambamba/)
@@ -84,26 +105,32 @@ align.py -a SRR1616919 -p kallisto -r /path/to/kallisto/index -o kallisto_output
 align.py -a SRR1616919 -p salmon -r /path/to/salmon/index -o salmon_output -t 16
 ```
 
+Call variants with mpileup...:
+
+```
+varcallers.py 	--caller mpileup \
+		--samtools PATH_TO/samtools \
+		--bam mybam.bam \
+		--out OUTFILE.vcf \
+                --index hg38.fa \
+		--regions clinvar.chr.bed 
+		```
+
+...or with GATK:
+
+```
+varcallers.py 	--caller gatk \
+		--gatk PATH_TO/GenomeAnalysisTK.jar \
+		--bam mybam.bam \
+		--out OUTDIR \
+		--index hg38.fa \
+		--regions clinvar.chr.bed \
+		--indels Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
+		--dbsnp Homo_sapiens_assembly38.dbsnp.vcf.gz \
+		--mem 16 --threads 12
+```
+
 ## Expressed variant calling
-
-### Dependencies
-
-Variant callers
-
-* [Samtools 1.3.1+](http://www.htslib.org/)
-* [The Genome Analysis Toolkit (GATK) 3.6+](https://software.broadinstitute.org/gatk/)
-* [Bedops](https://bedops.readthedocs.io/en/latest/content/reference/file-management/conversion/vcf2bed.html) - to convert VCFs into BED
-
-Trascript counting
-
-* [Subread (for featureCounts) 1.5.1+](http://bioinf.wehi.edu.au/featureCounts/)
-
-Reference data : note that the chromosome/contig identifiers need to match for all of these
-
-* [GRCh38 human genome reference fasta]()
-  * Create reference indexes for almost all of the above tools
-* [ClinVar vcf]()
-* [GTF file with exome regions]()
 
 #### Usage
 
