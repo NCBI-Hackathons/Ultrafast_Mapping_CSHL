@@ -24,9 +24,13 @@ log = logging.getLogger()
 
 # TODO: [JD] Incorporate compressive mapping code from CORA
 # https://github.com/jdidion/cora/blob/master/manual.txt
+# http://bioinformatics.oxfordjournals.org/content/32/20/3124.short
 
 # TODO: [JD] Incorporate qtip MAPQ correction?
 # https://github.com/BenLangmead/qtip
+
+# TODO: [JD] Aligner "boosting"
+# https://github.com/Grice-Lab/AlignerBoost
 
 # TODO: [JD] Incoprorate Popen hacks from
 # https://github.com/brentp/toolshed/blob/master/toolshed/files.py
