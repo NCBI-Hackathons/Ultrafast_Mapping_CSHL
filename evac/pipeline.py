@@ -7,7 +7,7 @@ import logging
 import shlex
 from subprocess import Popen, PIPE
 from evac.sra import *
-from evac.utils import *
+from xphyle.paths import TempDir
 
 log = logging.getLogger()
 

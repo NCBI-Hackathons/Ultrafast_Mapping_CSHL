@@ -1,10 +1,10 @@
 #!/bin/env python3
 import sys
-from evac.utils import TempDir
 import os.path
 import subprocess
 import re
 import logging
+from xphyle.paths import TempDir
 
 log = logging.getLogger()
 
@@ -19,7 +19,7 @@ def mpileup_pipeline(args):
     caller_args=args.caller_args
     regions=args.regions
 
-    CMD=[samtools, "mpileup", 
+    CMD=[samtools, "mpileup",
         "-f", REF,
         "-l", regions,
         "-v", "-u", "-t DP,AD", caller_args, "-"]
