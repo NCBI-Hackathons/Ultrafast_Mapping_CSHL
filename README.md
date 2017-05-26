@@ -137,4 +137,5 @@ Install the alignment tools as above, and the run the 'run_pipeline.sh' script i
 
 ## TODO
 
+* Move all scripts over to srastream https://github.com/jdidion/srastream
 * Update to samtools 1.4 dependency and drop Sambamba dependency.
