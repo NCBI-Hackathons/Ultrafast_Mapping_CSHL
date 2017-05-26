@@ -44,10 +44,6 @@ def main(script_dir):
         default=None, metavar="PATH",
         help="Path to the golden indels VCF file for 'gatk'")
     parser.add_argument(
-        '--indels',
-        default=None, metavar="PATH",
-        help="Path to the golden indels for 'gatk'")
-    parser.add_argument(
         '--java',
         default="java", metavar="PATH",
         help="Absolute path to the 'java' JRE executable ")
@@ -58,8 +54,7 @@ def main(script_dir):
     parser.add_argument(
         '--samtools',
         default="samtools", metavar="PATH",
-        help="Absolute path to the samtools executable"
-        )
+        help="Absolute path to the samtools executable")
     parser.add_argument(
         '--caller-args',
         default="", metavar="ARGS",

@@ -5,8 +5,12 @@ from contextlib import contextmanager
 from inspect import isclass
 import logging
 import shlex
-from subprocess import Popen, PIPE
-from evac.sra import *
+from multiprocessing import Process
+from subprocess import Popen
+from srastream import SraReader, sra_dump
+from srastream.utils import Batcher
+import sys
+from xphyle import open_
 from xphyle.paths import TempDir
 
 log = logging.getLogger()
@@ -32,25 +36,21 @@ log = logging.getLogger()
 # TODO: [JD] Aligner "boosting"
 # https://github.com/Grice-Lab/AlignerBoost
 
-# TODO: [JD] Incoprorate Popen hacks from
-# https://github.com/brentp/toolshed/blob/master/toolshed/files.py
-# https://github.com/wal-e/wal-e/blob/master/wal_e/pipebuf.py
-
-def stream_sra_reads(script_dir, args, progress, fifo1, fifo2):
-    script = os.path.join(script_dir, "stream_sra.py")
-    cmd = shlex.split("""
-        {exe} {script} -a {accn} --batch-size {batch_size}
-            {max_reads} {progress} {fifo1} {fifo2}
-    """.format(
-        exe=sys.executable,
-        script=script,
-        accn=args.sra_accession,
-        max_reads='--max-reads {}'.format(args.max_reads) if args.max_reads else '',
-        batch_size=args.batch_size,
-        progress='--progress' if progress else '',
-        fifo1=fifo1,
-        fifo2=fifo2))
-    return Popen(cmd)
+class SraDump(Process):
+    """Process to dump SRA reads to FIFOs.
+    """
+    def __init__(self, args, prefix, progress):
+        self.args = args
+        self.prefix = prefix
+        self.progress = progress
+        
+    def run(self):
+        sra_dump(
+            self.args.sra_accession, self.prefix, 
+            compression=self.args.compression,
+            progress=self.progress,
+            batch_size=self.args.batch_size, 
+            max_reads=self.args.max_reads)
 
 # TODO: [JD] The use of pipes and shell=True is insecure and not the recommended
 # way of doing things, but I want to benchmark the alternative (chained Popens)
@@ -74,19 +74,17 @@ def hisat_pipeline(args):
             proc.wait()
 
 class SraPipeline(object):
-    def __init__(self, script_dir):
-        self.script_dir = script_dir
-    
     def __call__(self, args):
         with TempDir(dir=args.temp_dir) as workdir:
-            fifo1, fifo2 = workdir.mkfifos('Read1', 'Read2')
             progress = args.progress and (
                 not args.quiet or args.log_level == 'ERROR' or args.log_file)
-            sra_proc = stream_sra_reads(
-                self.script_dir, args, progress, fifo1, fifo2)
-            with self.align(args, fifo1, fifo2) as align_proc:
+            sra_proc = SraDump(args, "fifo", progress)
+            with self.align(args, "fifo.1.fq", "fifo.2.fq") as align_proc:
                 for proc in (sra_proc, align_proc):
                     proc.wait()
+    
+    def align(self, args, fifo1, fifo2):
+        raise NotImplementedError()
 
 class StarPipeline(SraPipeline):
     @contextmanager
@@ -155,15 +153,9 @@ class SalmonPipeline(SraPipeline):
 def sra_to_fastq_pipeline(args):
     """Just dump reads from SRA to fastq files.
     """
-    fq1_path = args.output + '.1.fq'
-    fq2_path = args.output + '.2.fq'
-    with open(fq1_path, 'wt') as fq1, open(fq2_path, 'wt') as fq2:
-        for read1, read2 in sra_reader(
-                args.sra_accession,
-                batch_size=args.batch_size,
-                max_reads=args.max_reads):
-            fq1.write("@{}\n{}\n+\n{}\n".format(*read1))
-            fq2.write("@{}\n{}\n+\n{}\n".format(*read2))
+    sra_dump(
+        args.sra_accession, args.output, compression=args.compression, 
+        batch_size=args.batch_size, max_reads=args.max_reads)
 
 def head_pipeline(args):
     """Just print the first ``max_reads`` reads.
@@ -172,7 +164,7 @@ def head_pipeline(args):
         item_limit=args.max_reads or 10,
         batch_size=args.batch_size,
         progress=False)
-    for read1, read2 in sra_reader(args.sra_accession, batcher):
+    for read1, read2 in SraReader(args.sra_accession, batcher):
         print(read1[0] + ':')
         print('  ' + '\t'.join(read1[1:]))
         print('  ' + '\t'.join(read2[1:]))
@@ -195,7 +187,7 @@ def list_pipelines():
     """
     return list(pipelines.keys())
 
-def run_pipeline(args, script_dir):
+def run_pipeline(args):
     """Run a pipeline using a set of command-line args.
     
     Args:
@@ -204,7 +196,7 @@ def run_pipeline(args, script_dir):
     setup_logging(args)
     pipeline = pipelines[args.pipeline]
     if isclass(pipeline):
-        pipeline = pipeline(script_dir)
+        pipeline = pipeline()
     pipeline(args)
 
 def setup_logging(args):

@@ -54,13 +54,16 @@ def main(script_dir):
         default=None, metavar="DIR",
         help="The root directory to use for temporary files/directories")
     parser.add_argument(
-        '--no-progress',
+        '--noprogress',
         action='store_false', default=True, dest='progress',
         help="No progress bar.")
     parser.add_argument(
         '--log-file',
         default=None, metavar="FILE",
         help="File for log messages (defaults to stdout)")
+    parser.add_argument(
+        "--compression",
+        default="gz", help="Type of compression to use on the output files.")
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
         '--log-level',
