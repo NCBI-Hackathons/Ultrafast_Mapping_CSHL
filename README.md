@@ -134,3 +134,7 @@ varcallers.py 	--caller gatk \
 #### Usage
 
 Install the alignment tools as above, and the run the 'run_pipeline.sh' script in the 'scripts' directory.
+
+## TODO
+
+* Update to samtools 1.4 dependency and drop Sambamba dependency.
