@@ -14,7 +14,7 @@ Older or newer versions may be used but may not be fully compatible.
 
 Pull from SRA:
 
-* [NGS Software Development Kit 1.3.0+](https://github.com/ncbi/ngs)
+* [NGS Software Development Kit 1.3.0+](https://github.com/ncbi/ngs): Make sure to [install the python SDK](https://github.com/ncbi/ngs/wiki/Building-and-Installing-from-Source)
 * [NCBI VDB Software Development Kit 2.8.0+](https://github.com/ncbi/ncbi-vdb)
 * [pv](https://linux.die.net/man/1/pv) (or any pipe-able buffering tool)
 
