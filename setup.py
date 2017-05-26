@@ -15,7 +15,7 @@ setup(
     author_email='john.didion@nih.gov',
     license='MIT',
     packages=['evac'],
-    scripts = ['scripts/align.py'],
+    scripts = ['scripts/align.py', 'scripts/stream_sra.py'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT',

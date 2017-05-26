@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import tabix as tb
+import tabix  
 import sys, subprocess, os
 import multiprocessing as mp
 import collections, itertools
@@ -14,6 +14,9 @@ parser.add_argument("-vcf", help="input VCF file")
 parser.add_argument("-feature", help="feature name to Annotate, must be in gff file",type=str,default=None)
 parser.add_argument("-np", help="number of processes",type=int,default=2)
 parser.add_argument("-asm", help="input assembly info text file (ie. /home/data/GCF_000001405.35.assembly.txt", type=str,default=None)
+parser.add_argument("-chr", help="VCF use chr (chr1, chr2, etc.) instead of (1, 2, etc.)", type=str,default=None)
+parser.add_argument("-debug", help="debug flag", type=str,default=None)
+preChrStart, preChrEnd = 0, 0
 
 args = parser.parse_args()
 
@@ -38,6 +41,9 @@ class gffChunk:
     self.vcf = vcf
     self.gff = open(gff, 'r')
     self.feature = feature
+    self.preChrStart = 0
+    self.preChrEnd = 0
+    self.preChr = ''
 
   def __iter__(self):
     return self
@@ -49,27 +55,59 @@ class gffChunk:
         line = self.gff.readline()
         continue
       data = line.strip().split("\t")
+      chrom, chrStart, chrEnd = data[0], int(data[3]),int(data[4])
+      #print(chrStart, chrEnd, self.preChrStart, self.preChrEnd )
+      if (chrStart == self.preChrStart): # and (chrEnd == self.preChrEnd):
+        line = self.gff.readline()
+        #print("skip...\n")
+        continue
+     
+
+      if (chrom != self.preChr):
+        self.preChrStart = 0
+        self.preChrEnd = 0
+        self.preChr = chrom
+      #print (data[2], self.feature)
       if data[2] == self.feature:
         lines = []
-        if data[0] in chrAcc:
-          chrnum = chrAcc[data[0] ]
-          res = tb.open(self.vcf).query(chrnum,int(data[3])-1,int(data[4])+1)
+        if chrom in chrAcc:
+          chrnum = chrAcc[chrom]
+          if (args.chr):
+            chrnum = 'chr' + chrnum
+
+          if (args.debug): 
+              print ('NoFeat',chrnum,self.preChrEnd + 1,chrStart - 1)
+              print ('Feat',chrnum,chrStart,chrEnd)
+
+          resNoAnnot, res = [], []
+          try:
+            resNoAnnot = tb.query(chrnum,self.preChrEnd + 1,chrStart - 1)
+          except:
+            e = sys.exc_info()[0]
+            print(e,  'NoFeat',chrnum,self.preChrEnd + 1,chrStart - 1)
+          res = tb.query(chrnum,chrStart,chrEnd)
+          
+          for r in resNoAnnot:
+            lines.append(r)
           for r in res:
             r[7] = r[7] + ';' + data[8]
             lines.append(r)
+          self.preChrStart = chrStart
+          self.preChrEnd = chrEnd
           return (lines)
+
       line = self.gff.readline()
     raise StopIteration
 
 
 def process_chunk(chunk):
-    return chunk
+  return chunk
   
  
 results = None
 start = time.time()
 print ("loading and annotating variants..." + str(args.np) + ' processes' )
-
+tb = tabix.open(args.vcf)
 chrAcc = getAsmInfo()
 
 if (args.gff and not args.feature) or (args.feature and not args.gff):
