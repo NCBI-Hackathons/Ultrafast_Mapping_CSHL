@@ -35,8 +35,7 @@ Transcript counting
 Variant callers
 
 * [Samtools 1.3.1+](http://www.htslib.org/)
-* [The Genome Analysis Toolkit (GATK)
-* 3.6+](https://software.broadinstitute.org/gatk/)
+* [The Genome Analysis Toolkit (GATK) 3.6+](https://software.broadinstitute.org/gatk/)
 * [Bedops](https://bedops.readthedocs.io/en/latest/content/reference/file-management/conversion/vcf2bed.html)
 * - to convert VCFs into BED
 
